@@ -1,0 +1,36 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "node": true,
+        "es6": true
+    },
+    "parser": "babel-eslint",
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module"
+    },
+    "rules": {
+        "semi": 2,
+        "semi-spacing": ["error", {"before": false, "after": true}],
+        "no-multi-spaces": 2,
+        "no-trailing-spaces": 2,
+        "space-in-parens": 2,
+        "keyword-spacing": 2,
+        "max-len": 2,
+        "quotes": ["error", "single"],
+        "no-multiple-empty-lines": 2,
+        // "camelcase": "error",
+        "operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before"}} ],
+        "comma-spacing": ["error", { "before": false, "after": true }],
+        "comma-style": ["error", "last"],
+        "dot-location": ["error", "object"],
+        "key-spacing": ["error", { "afterColon": true, "mode": "strict" }],
+        "brace-style": ["error", "1tbs", {"allowSingleLine": true}],
+        "arrow-body-style": ["error", "always"],
+        "space-before-function-paren": ["error", {"anonymous": "never", "named": "never"}],
+        "arrow-spacing": ["error", { "before": true, "after": true } ],
+        "space-before-blocks": ["error", { "functions": "always", "keywords": "always", "classes": "always" }]
+    }
+}

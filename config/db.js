@@ -41,7 +41,7 @@ function defineModel(name, attributes) {
         tableName: name,
         timestamps: false,
         hooks: {
-            beforeSave: function (obj) {
+            beforeSave: (obj) => {
                 let now = Date.now();
                 if (obj.isNewRecord) {
                     obj.create_time = now;
@@ -56,4 +56,4 @@ function defineModel(name, attributes) {
 
 module.exports={
     defineModel
-}
+};

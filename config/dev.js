@@ -11,6 +11,6 @@ const config = {
     PORT: '3306',
     HOST: '192.168.100.201'
   }
-}
+};
 
-module.exports = config
+module.exports = config;
