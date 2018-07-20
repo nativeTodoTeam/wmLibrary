@@ -37,7 +37,7 @@ router.get('/test', async (ctx) => {
     await bookModel.updateData({
       title: '测试书籍'
     }, {
-      title1: '测试书籍1'
+      title: '测试书籍1'
     }).then(result => {
       console.log(result);
     });
