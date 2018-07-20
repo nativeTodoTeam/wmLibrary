@@ -6,14 +6,38 @@ const Book = db.defineModel('books', {
     type: Sequelize.INTEGER(11),
     primaryKey: true
   },
-  type_id: Sequelize.INTEGER(11),
-  title: Sequelize.STRING,
-  author: Sequelize.STRING,
-  url: Sequelize.STRING,
-  content: Sequelize.STRING,
-  create_time: Sequelize.STRING,
-  update_time: Sequelize.STRING,
-  status: Sequelize.STRING,
+  type_id: {
+    type: Sequelize.INTEGER(11),
+    allowNull: true
+  },
+  title: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  author: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  url: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  content: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  create_time: {
+    type: Sequelize.TIMESTAMP,
+    allowNull: true
+  },
+  update_time: {
+    type: Sequelize.TIMESTAMP,
+    allowNull: true
+  },
+  status: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  }
 });
 
 
