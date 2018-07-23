@@ -29,8 +29,20 @@ const resFailure = (ctx, data) => {
   ctx.app.emit('error', data, ctx);
 };
 
+// 参数错误
+const parameterErr = (ctx, data) => {
+  ctx.response.status = 200;
+  ctx.response.body = {
+    code: 2,
+    msg: '参数错误',
+    data: data
+  };
+  ctx.app.emit('error', data, ctx);
+}
+
 module.exports={
   resSuccess,
   errorThrow,
-  resFailure
+  resFailure,
+  parameterErr
 };
