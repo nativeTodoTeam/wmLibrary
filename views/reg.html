@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    .input {
+      margin-bottom: 10px;
+      min-height: 18px;
+      line-height: 18px;
+      font-size: 14px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  name: <input type="text" name="name" class = 'input'>
+  email: <input type="text" name="email" class = 'input' id = 'email'>
+  phone: <input type="text" name="phone" class = 'input'>
+  url: <input type="text" name="url" class = 'input'>
+  <button value="Submit" id = 'submit'>submit</button>
+  <script type="text/javascript">
+    var input = document.querySelectorAll('.input');
+    var btn = document.querySelector('#submit');
+    var emailInput = document.querySelector('#email');
+    var data = {};
+
+    emailInput.onblur = (e) => {
+      let value = e.target.value;
+      var xml = new XMLHttpRequest();
+
+      xml.onreadystatechange = function() {
+        console.log(xml.readyState, xml.status)
+
+        if (xml.readyState == 4 && xml.status == 200) {
+          var res = xml.responseText;
+
+          if (res === '00') {
+            alert('邮箱不属于该公司，请确认！！！')
+          } else if (res === '01') {
+            alert('邮箱已被注册！！！')
+          } else {
+            alert('邮箱验证成功！！！')
+          }
+        }
+      }
+      var _data = JSON.stringify({ email: value });
+      xml.open('GET', `/reg/verifyEmail?email=${value}`);
+      xml.send();
+    }
+
+    btn.onclick = () => {
+      input.forEach((v) => {
+        data[v.name] = v.value;
+      })
+      var xml = new XMLHttpRequest();
+
+      xml.onreadystatechange = function() {
+        console.log(xml.readyState, xml.status)
+
+        if (xml.readyState == 4 && xml.status == 200) {
+      		var res = xml.responseText;
+
+          if (res === '1') {
+            alert('注册成功，请设置你的密码哦')
+            location.href = '/reg/setPassword'
+          } else {
+            alert('注册失败！')
+            location.href = '/reg'
+          }
+      	}
+      }
+      var _data = JSON.stringify(data);
+      xml.open('POST', '/reg');
+      xml.send(_data);
+    }
+  </script>
+</body>
+</html>

@@ -9,6 +9,7 @@ const views = require('koa-views')
 const logUtil = require('./utils/log_util');
 
 const index = require('./routes/index');
+const register = require('./routes/register');
 
 // error handler
 onerror(app)
@@ -44,7 +45,7 @@ app.use(async (ctx, next) => {
     logUtil.logResponse(ctx, ms);
 
   } catch (error) {
-    
+
     ms = new Date() - start;
     //记录异常日志
     logUtil.logError(ctx, error, ms);
@@ -54,6 +55,7 @@ app.use(async (ctx, next) => {
 // routes
 // allowedMethods 用于校验请求的方法, 如果用 post 请求访问 get 接口，就会直接返回失败
 app.use(index.routes(), index.allowedMethods())
+app.use(register.routes(), register.allowedMethods());
 
 // error-handling
 app.on('error', (err, ctx) => {

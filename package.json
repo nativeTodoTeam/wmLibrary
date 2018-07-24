@@ -20,6 +20,7 @@
   "homepage": "https://github.com/nativeTodoTeam/wmLibrary#readme",
   "dependencies": {
     "koa": "^2.5.2",
+    "koa-bodyparser": "^4.2.1",
     "koa-json": "^2.0.2",
     "koa-logger": "^3.2.0",
     "koa-onerror": "^4.0.0",
