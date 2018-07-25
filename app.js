@@ -14,8 +14,6 @@ const index = require('./routes/index');
 const register = require('./routes/register');
 const books = require('./routes/api/book');
 
-const cors = require('koa-cors');
-
 // error handler
 onerror(app);
 
@@ -58,7 +56,6 @@ app.use(async (ctx, next) => {
   }
 });
 
-app.use(cors());
 // routes
 // allowedMethods 用于校验请求的方法, 如果用 post 请求访问 get 接口，就会直接返回失败
 app.use(index.routes(), index.allowedMethods())

@@ -1,15 +1,15 @@
 const Sequelize = require('sequelize');
-const devConfig = require('../config/dev');
+const config = require('../config/index');
 
-var sequelize = new Sequelize('frog_library', 'root', 'bjfrog', {
-  host: '192.168.100.201',
-  dialect: 'mysql',
-  pool: {
-    max: 5,
-    min: 0,
-    idle: 30000
-  }
-})
+var sequelize = new Sequelize(config.database.DATABASE, config.database.USERNAME, config.database.PASSWORD, {
+    host: config.database.HOST,
+    dialect: 'mysql',
+    pool: {
+        max: 5,
+        min: 0,
+        idle: 30000
+    }
+});
 
 const Users = sequelize.define('users', {
   id: { type: Sequelize.BIGINT(11), primaryKey: true},
