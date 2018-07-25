@@ -7,14 +7,20 @@ const logger = require('koa-logger');
 const staticFile = require('koa-static');
 const views = require('koa-views');
 const logUtil = require('./utils/log_util');
+const cors = require('koa-cors');  // 设置跨域问题
+
 
 const index = require('./routes/index');
 const register = require('./routes/register');
+const books = require('./routes/api/book');
 
 const cors = require('koa-cors');
 
 // error handler
 onerror(app);
+
+// 解决跨域报错问题
+app.use(cors());
 
 // middlewares
 app.use(bodyparser({
@@ -57,6 +63,7 @@ app.use(cors());
 // allowedMethods 用于校验请求的方法, 如果用 post 请求访问 get 接口，就会直接返回失败
 app.use(index.routes(), index.allowedMethods())
 app.use(register.routes(), register.allowedMethods());
+app.use(books.routes());
 
 // error-handling
 app.on('error', (err, ctx) => {

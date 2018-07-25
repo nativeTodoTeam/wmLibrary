@@ -76,6 +76,7 @@ const deleteData = async (obj) => {
 };
 
 module.exports={
+  Book,
   insertData,
   selectData,
   updateData,

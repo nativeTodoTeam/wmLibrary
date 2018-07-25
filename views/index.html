@@ -15,12 +15,13 @@
       <input placeholder="用户名" type="text" name="title">
     </div>
     <div class="submit">插入</div>
+    <div class="submitSelect">查询</div>
   </form>
   <script>
     $('.submit').click(()=>{
         console.log($('.form').serialize())
         $.ajax({
-            url: "/test_post",
+            url: "http://localhost:3000/test_post",
             data: $('.form').serialize(),
             type: "POST",
             cache: false,
@@ -51,6 +52,27 @@
                 alert('异常');
             }
         })      
+    })
+
+    $('.submitSelect').click(() => {
+      let _data = {
+        type: 1,
+        pageNo: 1,
+        pageSize: 4
+      } ;
+      $.ajax({
+        url: "http://localhost:3000/findBookList",
+        data: _data,
+        type: "POST",
+        // cache: false,
+        dataType: 'json',
+        success: function(res) {
+          console.log(res, '请求的数据')
+        },
+        error: function() {
+          alert('请求异常')
+        }
+      })
     })
   </script>
 </body>
