@@ -24,8 +24,10 @@ const Users = sequelize.define('users', {
   status: Sequelize.INTEGER,
   create_time: Sequelize.STRING,
   update_time: Sequelize.STRING,
+  position: Sequelize.INTEGER,
+  reg_status: Sequelize.INTEGER,
 }, {
-  // 不要添加时间戳属性 (updatedAt, createdAt)
+  // 不需要添加时间戳属性 (updatedAt, createdAt)
   timestamps: false,
 });
 

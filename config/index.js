@@ -5,4 +5,4 @@ const prod = require('./prod');
 module.exports = {
   dev: dev,
   prod: prod
-}[process.env.NODE_ENV || 'dev']
+}[process.env.NODE_ENV || 'dev'];

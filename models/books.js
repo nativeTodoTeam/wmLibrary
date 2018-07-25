@@ -2,18 +2,49 @@ const Sequelize = require('sequelize');
 const db = require('../config/db');
 
 const Book = db.defineModel('books', {
-  // id: {
-  //     type: Sequelize.INT(11),
-  //     primaryKey: true
-  // },
-  title: Sequelize.STRING,
+  id: {
+    type: Sequelize.INTEGER(11),
+    primaryKey: true
+  },
+  type_id: {
+    type: Sequelize.INTEGER(11),
+    allowNull: true
+  },
+  title: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  author: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  url: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  content: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  create_time: {
+    type: Sequelize.TIMESTAMP,
+    allowNull: true
+  },
+  update_time: {
+    type: Sequelize.TIMESTAMP,
+    allowNull: true
+  },
+  status: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  }
 });
 
 
 const insertData = async (obj) => {
   let callback = await Book.create(obj);
-  console.log('created: success ' + JSON.stringify(callback));
-  return callback;
+  console.log('created: success');
+  return JSON.parse(JSON.stringify(callback));
 };
 
 const selectData = async (obj) => {
@@ -21,22 +52,27 @@ const selectData = async (obj) => {
     where: obj
   });
   console.log(`find ${callback.length} books: success`);
-  return callback;
+  return JSON.parse(JSON.stringify(callback));
 };
 
 const updateData = async (values, options) => {
-  await Book.update(values, options)
-  .then(result => {
-    console.log(`update ${result.length}: success`);
+  let callback = await Book.update(values, {
+    where: options
+  }).then(result => {
+    console.log(`update ${result} books: success`);
     return result;
-  })
-  .catch(error => {
-    console.log('error: ' +  error)
-  })
+  });
+  return callback[0];
 };
 
-const deleteData = async (p) => {
-  await p.destroy();
+const deleteData = async (obj) => {
+  let callback = await Book.destroy({
+    where: obj
+  }).then(result => {
+    console.log(`delete ${result} books: success`);
+    return result;
+  });
+  return callback;
 };
 
 module.exports={
@@ -44,4 +80,4 @@ module.exports={
   selectData,
   updateData,
   deleteData
-}
+};

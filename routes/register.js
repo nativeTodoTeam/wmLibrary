@@ -4,49 +4,57 @@ const devConfig = require('../config/dev');
 const usersModel = require('../models/user');
 const crypto = require('crypto');
 
+const routerConfig = require('../public/js/route');
+
 var router = new Router();
 
-// 注册
+
 const registerView = async (ctx, next) => {
   await ctx.render('reg');
 };
 
+// 注册接口
 const register = async (ctx, next) => {
   console.log('正在注册！！！');
-  console.log(ctx.request.body)
 
   let data = JSON.parse(ctx.request.body);
-  console.log(data)
+
+  // 判断参数是否为空
+  if (!data.name || !data.phone || !data.email || !data.position ||
+      !data.company_id) {
+    routerConfig.parameterErr(ctx);
+    return;
+  }
+
+  data.reg_status = 1;
+
   await usersModel.update(data, {
     where: {
       id: 3
     },
-    fields: ['name', 'email', 'phone', 'url'],
     silent: true
   })
     .then((res) => {
       console.log('更新成功：', res)
-      ctx.response.status = 200;
-      ctx.response.body = '1';
+      routerConfig.resSuccess(ctx, '注册成功')
     })
     .catch((err) => {
       console.log('更新失败：', err)
-      ctx.response.status = 200;
-      ctx.response.body = '0';
+      routerConfig.resFailure(ctx, '注册失败')
     })
 };
 
-// 设置密码
+
 const setPasswordView = async (ctx) => {
   await ctx.render('setPassword')
 }
 
+// 密码设置接口
 const setPassword = async (ctx) => {
   let data = JSON.parse(ctx.request.body);
 
   // 创建 md5 算法加密
   let md5 = crypto.createHash('md5');
-  console.log(data)
 
   if (data.password && data.confirmPassword) {
 
@@ -67,32 +75,28 @@ const setPassword = async (ctx) => {
         silent: true
       })
         .then((res) => {
-          ctx.res.status = 200;
-          ctx.response.body = '1';
+          routerConfig.resSuccess(ctx)
         })
         .catch((res) => {
-          ctx.res.status = 200;
-          ctx.response.body = '0';
+          routerConfig.resFailure(ctx)
         })
     } else {
-      ctx.response.body = '0';
+      routerConfig.parameterErr(ctx)
     }
 
   } else {
-    ctx.res.status = 200;
-    ctx.response.body = '0';
+    routerConfig.parameterErr(ctx)
   }
 
 }
 
-// 邮箱验证
+// 邮箱验证接口
 const verifyEmail = async (ctx) => {
   let data = ctx.request.query;
 
   //  为空判断
-  if (!data) {
-    ctx.res.status = 200;
-    ctx.response.body = '0';
+  if (!data.email) {
+    routerConfig.parameterErr(ctx)
     return;
   }
 
@@ -107,23 +111,20 @@ const verifyEmail = async (ctx) => {
       if (res.length == 1) {
 
         //检验该email是否已注册  01:已注册、00:未注册
-        if (res[0].dataValues.name) {
-          ctx.res.status = 200;
-          ctx.response.body = '01';
+        if (res[0].dataValues.reg_status == 1) {
+          routerConfig.resSuccess(ctx, '01')
           return;
         } else {
-          ctx.res.status = 200;
-          ctx.response.body = '02';
+          routerConfig.resSuccess(ctx, '02')
           return;
         }
 
       } else {
-        ctx.res.status = 200;
-        ctx.response.body = '00';
+        routerConfig.resSuccess(ctx, '00')
       }
 
     }).catch((err) => {
-      console.log(err)
+      routerConfig.resFailure(ctx)
     })
 }
 
