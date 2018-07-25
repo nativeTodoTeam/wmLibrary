@@ -4,7 +4,7 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 
 
 /**
-* @api {post} /addbook addbook
+* @api {post} /addbook 添加书籍
 * @apiDescription 测试post接口
 * @apiGroup Book
 * @apiParam {int} type 书籍分类
@@ -76,7 +76,7 @@ router.get('/addbook', async (ctx, next) => {
 });
 // @apiSampleRequest http://localhost:3000/findBookList
 /**
-* @api {post} /findBookList findBookList
+* @api {post} /findBookList 所有书籍列表
 * @apiDescription 测试post接口
 * @apiGroup Book
 * @apiParam {int} type 书籍分类

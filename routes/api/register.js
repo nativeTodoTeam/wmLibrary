@@ -29,7 +29,6 @@ const registerView = async (ctx, next) => {
     msg: '添加成功',
     data: {}
 * }
-* @apiSampleRequest http://localhost:3000/reg
 * @apiVersion 1.0.0
 */
 
@@ -71,7 +70,7 @@ const setPasswordView = async (ctx) => {
 }
 
 /**
-* @api {post} /reg/setPassword  用户注册设置密码接口
+* @api {post} /reg/setPassword 用户设置密码接口
 * @apiGroup users
 * @apiDescription 用户设置密码接口
 * @apiParam {string} password 密码
@@ -86,7 +85,6 @@ const setPasswordView = async (ctx) => {
     msg: '添加成功',
     data: {}
 * }
-* @apiSampleRequest http://localhost:3000/reg/setPassword
 * @apiVersion 1.0.0
 */
 
