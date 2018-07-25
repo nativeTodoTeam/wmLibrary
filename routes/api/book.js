@@ -4,16 +4,14 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 
 
 /**
-* @api {post} /addbook
+* @api {post} /addbook addbook
 * @apiDescription 测试post接口
-* @apiGroup 添加书籍
-*
+* @apiGroup Book
 * @apiParam {int} type 书籍分类
 * @apiParam {string} title 书籍名称
 * @apiParam {string} author 书籍作者
 * @apiParam {string} content 书籍简介
 * @apiParam {string} url 书籍封面
-*
 * @apiSuccess {int} code 成功: 0, 失败: 1
 * @apiSuccess {string} msg 请求成功/失败
 * @apiSuccess {json} data 返回内容
@@ -23,7 +21,7 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
       msg: '请求成功',
       data: {}
 *  }
-* @apiSampleRequest http://localhost:3000/addbook
+* 
 * @apiVersion 1.0.0
 */
 
@@ -76,13 +74,14 @@ router.get('/addbook', async (ctx, next) => {
     resFailure(ctx, err);
   }
 });
-
+// @apiSampleRequest http://localhost:3000/findBookList
 /**
-* @api {post} /findBookList
+* @api {post} /findBookList findBookList
 * @apiDescription 测试post接口
-* @apiGroup 按照类型查询书籍列表
+* @apiGroup Book
 * @apiParam {int} type 书籍分类
 * @apiParam {int} pageSize 条数
+* @apiParam {int} pageNo 页码
 *
 * @apiSuccess {int} code 成功: 0, 失败: 1
 * @apiSuccess {string} msg 请求成功/失败
@@ -109,7 +108,7 @@ router.get('/addbook', async (ctx, next) => {
 		nextPage: 2
       }
 *  }
-* @apiSampleRequest http://localhost:3000/findBookList
+*
 * @apiVersion 1.0.0
 */
 
