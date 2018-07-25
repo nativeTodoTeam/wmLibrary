@@ -7,6 +7,7 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 * @api {post} /addbook
 * @apiDescription 测试post接口
 * @apiGroup 添加书籍
+*
 * @apiParam {int} type 书籍分类
 * @apiParam {string} title 书籍名称
 * @apiParam {string} author 书籍作者
@@ -19,7 +20,7 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 * @apiSuccessExample {json} Success-Response:
 *  {
       code: 1,
-      msg: '添加成功',
+      msg: '请求成功',
       data: {}
 *  }
 * @apiSampleRequest http://localhost:3000/addbook
@@ -66,7 +67,7 @@ router.get('/addbook', async (ctx, next) => {
 	    ctx.response.status = 200;
 	    ctx.response.body = {
 		  code: 1,
-		  msg: '添加成功',
+		  msg: '请求成功',
 		  data: {}
 		}
   	}
