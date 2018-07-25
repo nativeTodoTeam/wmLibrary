@@ -12,7 +12,7 @@ const errorThrow = (ctx, err) => {
 const resSuccess = (ctx, data) => {
   ctx.response.status = 200;
   ctx.response.body = {
-    code: 0,
+    code: 1,
     msg: '请求成功',
     data: data
   };
@@ -22,7 +22,7 @@ const resSuccess = (ctx, data) => {
 const resFailure = (ctx, data) => {
   ctx.response.status = 200;
   ctx.response.body = {
-    code: 1,
+    code: 0,
     msg: '请求失败',
     data: data
   };
