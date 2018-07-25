@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    .input {
+      margin-bottom: 10px;
+      min-height: 18px;
+      line-height: 18px;
+      font-size: 14px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  name: <input type="text" name="name" class = 'input'>
+  email: <input type="text" name="email" class = 'input' id = 'email'>
+  phone: <input type="text" name="phone" class = 'input'>
+  position: <input type="text" name="position" class = 'input'>
+  company_id: <input type="text" name="company_id" class = 'input'>
+  <button value="Submit" id = 'submit'>submit</button>
+  <script type="text/javascript">
+    var input = document.querySelectorAll('.input');
+    var btn = document.querySelector('#submit');
+    var emailInput = document.querySelector('#email');
+    var data = {};
+
+    emailInput.onblur = (e) => {
+      let value = e.target.value;
+      var xml = new XMLHttpRequest();
+
+      xml.onreadystatechange = function() {
+        console.log(xml.readyState, xml.status)
+
+        if (xml.readyState == 4 && xml.status == 200) {
+          var res = JSON.parse(xml.responseText);
+
+          if (res.code == 1) {
+            alert('请求失败')
+            return;
+          }
+
+          if (res.code == 2) {
+            alert('参数错误');
+            return;
+          }
+
+          if (res.data == '00') {
+            alert('邮箱不属于该公司，请确认！！！')
+          } else if (res.data === '01') {
+            alert('邮箱已被注册！！！')
+          } else {
+            alert('邮箱验证成功！！！')
+          }
+        }
+      }
+      var _data = JSON.stringify({ email: value });
+      xml.open('GET', `http://localhost:3000/reg/verifyEmail?email=${value}`);
+      xml.send();
+    }
+
+    btn.onclick = () => {
+      input.forEach((v) => {
+        data[v.name] = v.value;
+      })
+      var xml = new XMLHttpRequest();
+
+      xml.onreadystatechange = function() {
+        console.log(xml.readyState, xml.status)
+
+        if (xml.readyState == 4 && xml.status == 200) {
+      		var res = JSON.parse(xml.responseText);
+          console.log(res)
+
+          if (res.code === 0 && res.data == '注册成功') {
+            alert('注册成功，请设置你的密码哦')
+            location.href = 'http://localhost:3000/reg/setPassword'
+            return;
+          }
+
+          if (res.code === 1 && res.data == '注册失败') {
+            alert('注册失败！')
+            location.href = 'http://localhost:3000/reg'
+            return;
+          }
+
+          if (res.code == 2) {
+            alert('参数错误');
+            return;
+          }
+      	}
+      }
+      var _data = JSON.stringify(data);
+      xml.open('POST', 'http://localhost:3000/reg');
+      xml.send(_data);
+    }
+  </script>
+</body>
+</html>
