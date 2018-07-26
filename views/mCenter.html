@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>蛙鸣图书馆-个人中心</title>
+  <script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <style media="screen">
+    .info {
+      border-bottom: 1px solid #000;
+      margin-bottom: 10px;
+      width: 400px;
+      height: 40px;
+      font-size: 18px;
+    }
+    .bookinfoBox {
+      border-bottom: 1px solid #000;
+      margin-bottom: 10px;
+      width: 400px;
+      min-height: 40px;
+      font-size: 18px;
+    }
+    .info>input {
+      font-size: 18px;
+      line-height: 40px;
+      border: none;
+      height: 100%;
+      width: 70%;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class = 'userInfo'>
+    <div class = 'info'>
+      姓名: <input name = "name"/>
+    </div>
+    <div class = 'info'>
+      手机号: <input name = "phone"/>
+    </div>
+    <div class = 'info'>
+      email: <input name = "email"/>
+    </div>
+    <div class = 'info'>
+      职务: <input name = "position"/>
+    </div>
+    <div class = 'info'>
+      分公司: <input name = "company_id"/>
+    </div>
+  </div>
+  <button class = 'btn' >获取用户信息</button>
+  <div style = "color: red;margin-top: 20px;">可编辑修改用户信息</div>
+
+  <div style = "margin-top: 100px;">
+    <div class = 'bookinfoBox'>
+      书名: <span class = 'bookinfo'></span>
+    </div>
+    <div class = 'bookinfoBox'>
+      作者: <span class = 'bookinfo'></span>
+    </div>
+    <div class = 'bookinfoBox'>
+      介绍: <span class = 'bookinfo'></span>
+    </div>
+  </div>
+  <div style = "margin-top: 20px;">
+    输入要查书籍的id: <span contenteditable = "true" class = 'bookIdBox' style = "border: 1px solid #000;width:100px;height:30px;display:inline-block;line-height: 30px;"></span>
+    <button class = 'bookBtn' >查询书籍详细信息</button>
+  </div>
+  <script>
+
+    $('.bookBtn').click(() => {
+      let bookId = $('.bookIdBox').html();
+      console.log(bookId)
+      $.ajax({
+        type: 'GET',
+        url: `http://localhost:3000/bookDetails?bookId=${bookId}`,
+        success: function(res) {
+          console.log(res)
+
+          if (res.data == '00') {
+            alert('该书不存在！！！');
+            return;
+          }
+
+          if (res.code == 2) {
+            alert('参数错误！！！');
+            return;
+          }
+
+          let data = [
+            res.data.title,
+            res.data.author,
+            res.data.content
+          ]
+          $('.bookinfo').each((i, v) => {
+            v.innerHTML = data[i];
+          })
+        }
+      })
+    })
+
+    $('.btn').click(() => {
+      $.ajax({
+        type: 'GET',
+        url: `http://localhost:3000/userInfo?userId=${3}`,
+        success: function(res) {
+          console.log(res)
+          let company = ['北京分公司', '广州分公司', '沈阳分公司'];
+          let data = [res.data.name, res.data.phone, res.data.email,
+            res.data.position, company[res.data.company_id]];
+            console.log(data)
+          console.log(  $('.info>span'))
+          $('.info>input').each((i, v) => {
+            console.log(data[i])
+            v.value = data[i];
+          })
+        }
+      })
+    })
+
+    $('input').blur((e) => {
+      console.log(e.target.value,e.target.name)
+      let _value = e.target.value;
+      let name = e.target.name;
+      let _data = {};
+      _data[name] = _value;
+      _data.userId = 3;
+      $.ajax({
+        type: 'POST',
+        url: `http://localhost:3000/updateUserInfo`,
+        data: _data,
+        success: function(res) {
+          console.log(res)
+          let company = ['北京分公司', '广州分公司', '沈阳分公司'];
+          let data = [res.data.name, res.data.phone, res.data.email,
+            res.data.position, company[res.data.company_id]];
+            console.log(data)
+          console.log(  $('.info>span'))
+          $('.info>span').each((i, v) => {
+            console.log(data[i])
+            v.innerHTML = data[i];
+          })
+        }
+      })
+    })
+  </script>
+
+</body>
+</html>

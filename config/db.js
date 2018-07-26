@@ -1,9 +1,12 @@
 const Sequelize = require('sequelize');
 const config = require('./index');
+const moment = require('moment');
 
-var sequelize = new Sequelize(config.database.DATABASE, config.database.USERNAME, config.database.PASSWORD, {
+var sequelize = new Sequelize(config.database.DATABASE,
+    config.database.USERNAME, config.database.PASSWORD, {
     host: config.database.HOST,
     dialect: 'mysql',
+    timezone: '+08:00',
     pool: {
         max: 5,
         min: 0,
@@ -33,9 +36,17 @@ function defineModel(name, attributes) {
     };
     attrs.create_time = {
         type: Sequelize.DATE,
+        get() {
+            return moment(
+                this.getDataValue('create_time')).format('YYYY-MM-DD HH:mm:ss');
+        }
     };
     attrs.update_time = {
         type: Sequelize.DATE,
+        get() {
+            return moment(
+                this.getDataValue('update_time')).format('YYYY-MM-DD HH:mm:ss');
+        }
     };
     return sequelize.define(name, attrs, {
         tableName: name,

@@ -38,7 +38,7 @@ const parameterErr = (ctx, data) => {
     data: data
   };
   ctx.app.emit('error', data, ctx);
-}
+};
 
 module.exports={
   resSuccess,

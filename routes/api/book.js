@@ -29,7 +29,7 @@ router.post('/addbook', async (ctx, next) => {
   // let _con = ctx.query;
   let _con = ctx.request.body;
   try {
-  	
+
   	// 判断这些都不能为空
   	if (!_con.type || _con.type == '') {
   	  parameterErr(ctx, {});
@@ -112,10 +112,17 @@ router.post('/addbook', async (ctx, next) => {
 * @apiVersion 1.0.0
 */
 
+<<<<<<< HEAD
 router.get('/bookList', async (ctx, next) => {
   // let _query = ctx.querystring;
   let _query = ctx.request.body;
  
+=======
+router.get('/findBookList', async (ctx, next) => {
+  let _query = ctx.querystring;
+  // let _query = ctx.request.body;
+
+>>>>>>> 567f01f3c956691615f5dfc70f77ad0f4a12b85a
   try {
   	await bookModel.Book.findAll({
   	  where: {
@@ -125,7 +132,7 @@ router.get('/bookList', async (ctx, next) => {
   	  offset: (parseInt(_query.pageNo) - 1) * parseInt(_query.pageSize)
 
   	}).then(result => {
-  		
+
 	  	ctx.response.status = 200;
 	    ctx.response.body = {
 		  code: 1,
@@ -144,5 +151,57 @@ router.get('/bookList', async (ctx, next) => {
   	resFailure(ctx, err);
   }
 });
+
+
+/**
+* @api {GET} /bookDetails?bookId=1 书详细信息接口
+* @apiGroup Book
+* @apiDescription 汪小岗
+* @apiParam {Number} bookId 书籍id (必填)
+*
+* @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
+* @apiSuccess {string} msg 请求成功/失败
+* @apiSuccess {string} data 返回数据 00: 书籍不存在
+* @apiSuccessExample {json} Success-Response:
+* {
+    code: 1,
+    msg: '请求成功',
+    data: {
+      "id": 4,
+      "type_id": 1,
+      "title": "JavaScript设计模式",
+      "author": "Addy Osmani",
+      "url": null,
+      "content": "设计模式的样式",
+      "create_time": "2018-07-23T22:29:45.000Z",
+      "update_time": "2018-07-23T22:29:45.000Z",
+      "status": null
+    }
+* }
+* @apiVersion 1.0.0
+*/
+const getBookDetails = async (ctx) => {
+  let data = ctx.request.query;
+
+  if (!data.bookId) {
+    parameterErr(ctx, {});
+    return;
+  }
+
+  await bookModel.Book.findById(data.bookId)
+          .then((res) => {
+            if (res && res.dataValues) {
+              resSuccess(ctx, res.dataValues)
+            } else {
+              resSuccess(ctx, '00')
+            }
+          })
+          .catch((err) => {
+            resFailure(ctx, err);
+          })
+
+}
+
+router.get('/bookDetails', getBookDetails);
 
 module.exports = router;
