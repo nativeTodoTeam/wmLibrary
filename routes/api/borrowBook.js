@@ -180,7 +180,7 @@ router.post('/borrowBook', async (ctx) => {
       return;
     }
 
-    if (endDate.getDate() - startDate.getDate() + 1 != _endDay) {
+    if (endDate.getDate() != _endDay) {
       parameterErr(ctx, 'end_time参数错误');
       return;
     }
@@ -190,15 +190,28 @@ router.post('/borrowBook', async (ctx) => {
       return;
     }
 
+    if (endDate.getMonth() != startDate.getMonth()) {
+      parameterErr(ctx, '开始时间与结束时间不在同一个月');
+      return;
+    }
+
     let sixMonthDate = getSixStartTime(new Date());
     if (startDate > sixMonthDate) {
       parameterErr(ctx, '开始时间大于6个月');
       return;
     }
 
-    let nowDate = getStartTimeFormat(new Date(), true);
-    if (startDate < nowDate) {
+    let nowMonthStartDate = getStartTimeFormat(new Date(), true);
+    if (startDate < nowMonthStartDate) {
       parameterErr(ctx, '开始时间小于当前时间');
+      return;
+    }
+
+    let nowDate = new Date();
+    let get25date = new Date(
+      nowDate.getFullYear(), nowDate.getMonth(), 25, 0, 0, 0);
+    if (startDate - nowMonthStartDate == 0 && nowDate > get25date) {
+      parameterErr(ctx, '每月25日之后不可借书');
       return;
     }
 
