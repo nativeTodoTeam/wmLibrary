@@ -41,11 +41,16 @@ module.exports = {
       maxLogSize: 104800,
       backups: 10,
       path: responsePath
+    },
+    console: {
+      category: 'console',
+      type: 'console',
     }
   },
   categories: {
     error: {appenders: ['error'], level: 'error'},
     response: {appenders: ['response'], level: 'info'},
+    console: { appenders: ['console'], level: 'info' },
     default: { appenders: ['response'], level: 'info' },
   },
   baseLogPath: baseLogPath //logs根目录
