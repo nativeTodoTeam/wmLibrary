@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
+  <title>蛙鸣图书馆</title>
   <style>
     .input {
       margin-bottom: 10px;
@@ -29,6 +29,7 @@
     var data = {};
 
     emailInput.onblur = (e) => {
+      return;
       let value = e.target.value;
       var xml = new XMLHttpRequest();
 
@@ -52,8 +53,10 @@
             alert('邮箱不属于该公司，请确认！！！')
           } else if (res.data === '01') {
             alert('邮箱已被注册！！！')
-          } else {
+          } else if (res.data === '02'){
             alert('邮箱验证成功！！！')
+          } else {
+            alert('邮箱验证失败！！！')
           }
         }
       }
@@ -75,13 +78,13 @@
       		var res = JSON.parse(xml.responseText);
           console.log(res)
 
-          if (res.code === 0 && res.data == '注册成功') {
+          if (res.code === 1 && res.data == '注册成功') {
             alert('注册成功，请设置你的密码哦')
             location.href = 'http://localhost:3000/reg/setPassword'
             return;
           }
 
-          if (res.code === 1 && res.data == '注册失败') {
+          if (res.code === 0 && res.data == '注册失败') {
             alert('注册失败！')
             location.href = 'http://localhost:3000/reg'
             return;
@@ -91,6 +94,13 @@
             alert('参数错误');
             return;
           }
+
+          if (res.data == '00') {
+            alert('邮箱不属于该公司，请确认！！！')
+          } else if (res.data === '01') {
+            alert('邮箱已被注册！！！')
+          }
+
       	}
       }
       var _data = JSON.stringify(data);
