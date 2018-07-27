@@ -21,7 +21,7 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
       msg: '请求成功',
       data: {}
 *  }
-* 
+*
 * @apiVersion 1.0.0
 */
 
@@ -115,7 +115,7 @@ router.post('/addbook', async (ctx, next) => {
 router.get('/bookList', async (ctx, next) => {
   // let _query = ctx.querystring;
   let _query = ctx.request.body;
- 
+
   try {
   	await bookModel.Book.findAll({
   	  where: {
@@ -149,7 +149,7 @@ router.get('/bookList', async (ctx, next) => {
 /**
 * @api {GET} /bookDetails?bookId=1 书详细信息接口
 * @apiGroup Book
-* @apiDescription 汪小岗
+* @apiDescription Author:汪小岗
 * @apiParam {Number} bookId 书籍id (必填)
 *
 * @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2

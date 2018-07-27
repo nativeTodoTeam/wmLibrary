@@ -12,7 +12,7 @@ const mCenterView = async (ctx) => {
 /**
 * @api {GET} /userInfo?userId=3 获取用户信息接口
 * @apiGroup users
-* @apiDescription 汪小岗
+* @apiDescription Author:汪小岗
 * @apiParam {Number} userId 用户id (必填)
 *
 * @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
@@ -74,7 +74,7 @@ const getUserInfo = async (ctx) => {
 /**
 * @api {POST} /userInfo 更新用户信息接口
 * @apiGroup users
-* @apiDescription 汪小岗
+* @apiDescription Author:汪小岗
 * @apiParam {Number} userId 用户id (必填)
 * @apiParam {string} signature 签名 (选填至少一项)
 * @apiParam {string} position 职务 (选填至少一项)
@@ -145,8 +145,77 @@ const updateUserInfo = async (ctx) => {
 
 }
 
+
+/**
+* @api {POST} /userOut 用户退出登录接口
+* @apiGroup users
+* @apiDescription Author:汪小岗
+* @apiParam {Number} userId 用户id (必填)
+*
+* @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
+* @apiSuccess {string} msg 请求成功/失败
+* @apiSuccess {string} data 返回数据
+* @apiSuccessExample {json} Success-Response:
+* {
+    code: 1,
+    msg: '请求成功',
+    data: {}
+* }
+* @apiVersion 1.0.0
+*/
+const userOut = async (ctx) => {
+  let data = ctx.request.body;
+
+  if (!data.userId) {
+    routerConfig.parameterErr(ctx, {});
+    return;
+  }
+
+  let isUserId = false;
+
+  // 查找该用户是否存在
+  await usersModel.findById(data.userId)
+    .then((res) => {
+      if (res) {
+        isUserId = true;
+      } else {
+        routerConfig.parameterErr(ctx, '用户不存在')
+      }
+
+    })
+    .catch((err) => {
+      routerConfig.resFailure(ctx, err)
+    })
+
+  if (!isUserId) {
+    return;
+  }
+
+  await usersModel.update({ token: null }, {
+    where: {
+      id: data.userId
+    }
+  })
+    .then((res) => {
+
+      if (res[0] == 1) {
+        routerConfig.resSuccess(ctx, {})
+      }
+
+      if (res[0] == 0) {
+        routerConfig.resSuccess(ctx, '')
+      }
+
+    })
+    .catch((err) => {
+      routerConfig.resFailure(ctx, err)
+    })
+
+}
+
 router.get('/mCenter', mCenterView);
 router.get('/userInfo', getUserInfo);
 router.post('/updateUserInfo', updateUserInfo);
+router.post('/userOut', userOut);
 
 module.exports = router

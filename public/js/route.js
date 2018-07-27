@@ -40,9 +40,21 @@ const parameterErr = (ctx, data) => {
   ctx.app.emit('error', data, ctx);
 };
 
+// token失效
+const resTokenErr = (ctx, data) => {
+  ctx.response.status = 401;
+  ctx.response.body = {
+    code: 0,
+    msg: '请求失败',
+    data: data
+  };
+  ctx.app.emit('error', data, ctx);
+};
+
 module.exports={
   resSuccess,
   errorThrow,
   resFailure,
-  parameterErr
+  parameterErr,
+  resTokenErr
 };

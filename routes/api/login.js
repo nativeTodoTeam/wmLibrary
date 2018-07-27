@@ -2,6 +2,7 @@ const router = require('koa-router')();
 const uuid = require('node-uuid');
 const userModel = require('../../models/user');
 const crypto = require('crypto');
+const jsonwebtoken = require('jsonwebtoken');
 const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 
 /**
@@ -53,7 +54,14 @@ router.post('/login', async (ctx) => {
       let md5Password = md5.digest('hex');
 
       if (md5Password && md5Password == selectResult[0].password) {
-        let token = uuid.v4();
+        // let token = uuid.v4();
+        // 获取token
+        let token = jsonwebtoken.sign({
+          data: {id: selectResult[0].id},
+          // 设置 token 过期时间 60 seconds * 60 minutes = 1 hour
+          exp: Math.floor(Date.now() / 1000) + (60 * 60),
+        }, 'shared-secret');
+
         let loginResult = await userModel.updateData({
           token: token
         }, {
@@ -62,7 +70,6 @@ router.post('/login', async (ctx) => {
 
         if (loginResult == 1) {
           resSuccess(ctx, {
-            id: selectResult[0].id,
             token: token,
             name: selectResult[0].name,
           });

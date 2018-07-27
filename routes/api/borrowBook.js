@@ -1,14 +1,11 @@
 const router = require('koa-router')();
 const borrowModel = require('../../models/borrow_books');
 const Sequelize = require('sequelize');
-const moment = require('moment');
 const Op = Sequelize.Op;
 const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 const {
-  getStartTimeFormat,
-  getEndTimeFormat,
   getSixStartTime,
-  getMonthCount,
+  getMonthStartDay,
   getMonthEndDay
 } = require('../../utils/date');
 
@@ -16,7 +13,7 @@ const {
 * @api {get} /getBorrowBookList 获取借阅情况接口
 * @apiDescription 获取借阅情况接口 - 史沐卉
 * @apiGroup Book
-* @apiParam {id} int 书id
+* @apiParam {int} id 书id
 * @apiSuccess {int} code 成功: 0, 失败: 1
 * * @apiSuccess {string} msg 请求成功/失败
 * * @apiSuccess {json} data 返回内容: status: 0 已预约/借出, -1 可预约和借阅
@@ -26,10 +23,10 @@ const {
       msg: '请求成功',
       data: [
         {
-            "start_time": "2018-07-01 00:00:00",
-            "end_time": "2018-07-30 00:00:00",
-            "create_time": "2018-07-26 00:00:00",
-            "update_time": "2018-07-26 00:00:00",
+            "start_time": "2018-07-31T16:00:00.000Z",
+            "end_time": "2018-07-29T16:00:00.000Z",
+            "create_time": "2018-07-27T02:02:56.000Z",
+            "update_time": "2018-07-27T02:02:56.000Z",
             "book_id": 1,
             "user_id": 1,
             "status": 0,
@@ -51,7 +48,7 @@ router.get('/getBorrowBookList', async (ctx) => {
     }
 
     let date = new Date();
-    let startTime = getStartTimeFormat(date, true);
+    let startTime = getMonthStartDay(date);
     let endTime = getSixStartTime(date);
 
     let selectResult = await borrowModel.selectData({
@@ -71,6 +68,7 @@ router.get('/getBorrowBookList', async (ctx) => {
       if (selectResult.length == 6) {
         resSuccess(ctx, selectResult);
       } else {
+        var returnArr = [];
         for (let i = 0; i < 6; i++) {
 
           let y = startTime.getFullYear();
@@ -82,35 +80,26 @@ router.get('/getBorrowBookList', async (ctx) => {
           }
 
           let date = new Date(y, m, 1);
-          let searchDate = getStartTimeFormat(date, true);
-          searchDate = moment(searchDate).format('YYYY-MM-DD HH:mm:ss');
-          let isHas = false;
+          let searchDate = getMonthStartDay(date);
+
+          returnArr.push({
+            book_id: data.id,
+            status: -1,
+            borrow_time:
+              searchDate.getFullYear() + '-' + (searchDate.getMonth() + 1),
+          });
 
           for (let j = 0; j < selectResult.length; j++) {
 
-            if (selectResult[j].start_time == searchDate) {
-              isHas = true;
+            if (new Date(selectResult[j].start_time) - searchDate == 0) {
+
+              returnArr[i].status = 0;
               break;
             }
           }
-
-          if (!isHas) {
-            let end_time = getMonthEndDay(searchDate);
-
-            selectResult.push({
-              id: null,
-              book_id: data.id,
-              user_id: null,
-              status: -1,
-              start_time: searchDate,
-              end_time: end_time,
-              create_time: '',
-              update_time: ''
-            });
-          }
         }
       }
-      resSuccess(ctx, selectResult);
+      resSuccess(ctx, returnArr);
     } else {
       resFailure(ctx, '查询失败');
     }
@@ -123,10 +112,8 @@ router.get('/getBorrowBookList', async (ctx) => {
 * @api {post} /borrowBook 借书/预约接口
 * @apiDescription 借书/预约接口 - 史沐卉
 * @apiGroup Book
-* @apiParam {book_id} int 书id
-* @apiParam {user_id} int 用户id
-* @apiParam {start_time} string 开始时间
-* @apiParam {end_time} string 结束时间
+* @apiParam {int} book_id 书id
+* @apiParam {string} borrow_time 借阅/预约时间 格式: 2018-10
 * @apiSuccess {int} code 成功: 0, 失败: 1
 * * @apiSuccess {string} msg 请求成功/失败
 * * @apiSuccess {json} data 返回内容
@@ -143,57 +130,21 @@ router.get('/getBorrowBookList', async (ctx) => {
 router.post('/borrowBook', async (ctx) => {
   try {
     const data = ctx.request.body;
+    const userId = ctx.user.id;
 
     if (!data.book_id || data.book_id == '') {
       parameterErr(ctx, '书id参数不能为空');
       return;
     }
 
-    if (!data.user_id || data.user_id == '') {
-      parameterErr(ctx, '用户id参数不能为空');
+    if (!data.borrow_time || data.borrow_time == '') {
+      parameterErr(ctx, 'borrow_time参数不能为空');
       return;
     }
 
-    if (!data.start_time || data.start_time == '') {
-      parameterErr(ctx, 'start_time参数不能为空');
-      return;
-    }
-
-    if (!data.end_time || data.end_time == '') {
-      parameterErr(ctx, 'end_time参数不能为空');
-      return;
-    }
-
-    // 格式化开始时间
-    let startDate = new Date(data.start_time);
-    startDate = getStartTimeFormat(startDate);
-
-    // 格式化结束时间
-    let endDate = new Date(data.end_time);
-    endDate = getEndTimeFormat(endDate);
-
-    // 获取月份多少天
-    let _endDay = getMonthCount(endDate);
-
-    if (startDate.getDate() != 1) {
-      parameterErr(ctx, 'start_time参数错误');
-      return;
-    }
-
-    if (endDate.getDate() != _endDay) {
-      parameterErr(ctx, 'end_time参数错误');
-      return;
-    }
-
-    if (startDate > endDate) {
-      parameterErr(ctx, '开始时间大于结束时间');
-      return;
-    }
-
-    if (endDate.getMonth() != startDate.getMonth()) {
-      parameterErr(ctx, '开始时间与结束时间不在同一个月');
-      return;
-    }
+    let borrowDate = new Date(data.borrow_time);
+    let startDate = getMonthStartDay(borrowDate);
+    let endDate = getMonthEndDay(borrowDate);
 
     let sixMonthDate = getSixStartTime(new Date());
     if (startDate > sixMonthDate) {
@@ -201,7 +152,7 @@ router.post('/borrowBook', async (ctx) => {
       return;
     }
 
-    let nowMonthStartDate = getStartTimeFormat(new Date(), true);
+    let nowMonthStartDate = getMonthStartDay(new Date());
     if (startDate < nowMonthStartDate) {
       parameterErr(ctx, '开始时间小于当前时间');
       return;
@@ -216,7 +167,7 @@ router.post('/borrowBook', async (ctx) => {
     }
 
     let selectResult = await borrowModel.selectData({
-      [Op.or]: [{book_id: data.book_id}, {user_id: data.user_id}],
+      [Op.or]: [{book_id: data.book_id}, {user_id: userId}],
       status: 0,
       start_time: {
         [Op.lte]: startDate,
@@ -229,7 +180,7 @@ router.post('/borrowBook', async (ctx) => {
     } else {
       let borrowResult = await borrowModel.insertData({
         book_id: data.book_id,
-        user_id: data.user_id,
+        user_id: userId,
         start_time: startDate,
         end_time: endDate,
         status: 0
@@ -240,6 +191,60 @@ router.post('/borrowBook', async (ctx) => {
       } else {
         resFailure(ctx, '操作失败');
       }
+    }
+  } catch (err) {
+    resFailure(ctx, err);
+  }
+});
+
+/**
+* @api {post} /cancelBorrow 取消预约接口
+* @apiDescription 取消预约接口 - 史沐卉
+* @apiGroup Book
+* @apiParam {int} borrow_id 预约id
+* @apiSuccess {int} code 成功: 0, 失败: 1
+* * @apiSuccess {string} msg 请求成功/失败
+* * @apiSuccess {json} data 返回内容
+* @apiSuccessExample {json} Success-Response:
+*  {
+      code: 1,
+      msg: '请求成功',
+      data: ''
+*  }
+* @apiSampleRequest http://localhost:3000/cancelBorrow
+* @apiVersion 1.0.0
+*/
+
+router.post('/cancelBorrow', async (ctx) => {
+  try {
+    const data = ctx.request.body;
+    const userId = ctx.user.id;
+
+    if (!data.borrow_id || data.borrow_id == '') {
+      parameterErr(ctx, '预约id参数不能为空');
+      return;
+    }
+
+    let selectResult = await borrowModel.selectData({
+      id: data.borrow_id,
+      user_id: userId,
+      status: 0
+    });
+
+    if (selectResult.length > 0) {
+      let cancelResult = await borrowModel.updateData({
+        status: 2
+      }, {
+        id: data.borrow_id
+      });
+
+      if (cancelResult == 1) {
+        resSuccess(ctx, '操作成功');
+      } else {
+        resFailure(ctx, '操作失败');
+      }
+    } else {
+      resFailure(ctx, '操作失败');
     }
   } catch (err) {
     resFailure(ctx, err);

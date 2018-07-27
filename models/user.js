@@ -1,5 +1,4 @@
 const Sequelize = require('sequelize');
-const config = require('../config/index');
 const db = require('../config/db');
 
 const Users = db.defineModel('users', {
@@ -13,8 +12,8 @@ const Users = db.defineModel('users', {
   company_id: { type: Sequelize.INTEGER, allowNull: true },
   token: { type: Sequelize.STRING, allowNull: true },
   status: { type: Sequelize.INTEGER, allowNull: true },
-  create_time: { type: Sequelize.STRING, allowNull: true },
-  update_time: { type: Sequelize.STRING, allowNull: true },
+  create_time: { type: Sequelize.TIMESTAMP, allowNull: true },
+  update_time: { type: Sequelize.TIMESTAMP, allowNull: true },
   position: { type: Sequelize.STRING, allowNull: true },
   reg_status: { type: Sequelize.INTEGER, allowNull: true },
 })
