@@ -18,4 +18,27 @@ const Users = db.defineModel('users', {
   reg_status: { type: Sequelize.INTEGER, allowNull: true },
 })
 
-module.exports = Users
+const selectData = async (obj) => {
+  let callback = await Users.findAll({
+    where: obj
+  });
+  console.log(`find ${callback.length} books: success`);
+  console.log(JSON.parse(JSON.stringify(callback)));
+  return JSON.parse(JSON.stringify(callback));
+};
+
+const updateData = async (values, options) => {
+  let callback = await Users.update(values, {
+    where: options
+  }).then(result => {
+    console.log(`update ${result} books: success`);
+    return result;
+  });
+  return callback[0];
+};
+
+module.exports = {
+  Users,
+  selectData,
+  updateData
+};

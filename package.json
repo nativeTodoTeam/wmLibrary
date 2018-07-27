@@ -24,13 +24,16 @@
     "koa-bodyparser": "^4.2.1",
     "koa-cors": "0.0.16",
     "koa-json": "^2.0.2",
+    "koa-jwt": "^3.3.2",
     "koa-logger": "^3.2.0",
     "koa-onerror": "^4.0.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
     "koa-views": "^6.1.4",
     "log4js": "^3.0.0",
+    "moment": "^2.22.2",
     "mysql2": "^1.5.3",
+    "node-uuid": "^1.4.8",
     "sequelize": "^4.38.0"
   },
   "apidoc": {
@@ -40,6 +43,7 @@
   "devDependencies": {
     "babel-eslint": "^8.2.6",
     "eslint": "^5.1.0",
-    "eslint-plugin-promise": "^3.8.0"
+    "eslint-plugin-promise": "^3.8.0",
+    "koa-cors": "0.0.16"
   }
 }

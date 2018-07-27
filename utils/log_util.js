@@ -12,6 +12,7 @@ let logUtil = {};
 
 const errorLogger = log4js.getLogger('errorLogger');
 const resLogger = log4js.getLogger('resLogger');
+const _console = log4js.getLogger('console');
 
 //封装错误日志
 logUtil.logError = (ctx, error, resTime) => {
@@ -24,6 +25,9 @@ logUtil.logError = (ctx, error, resTime) => {
 logUtil.logResponse = (ctx, resTime) => {
   if (ctx) {
     resLogger.info(formatRes(ctx, resTime));
+    if (!process.env.NODE_ENV || process.env.NODE_ENV == 'dev') {
+      _console.info(formatRes(ctx, resTime));
+    }
   }
 };
 

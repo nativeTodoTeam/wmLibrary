@@ -5,7 +5,7 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 
 /**
 * @api {post} /addbook 添加书籍
-* @apiDescription 测试post接口
+* @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} type 书籍分类
 * @apiParam {string} title 书籍名称
@@ -25,9 +25,9 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 * @apiVersion 1.0.0
 */
 
-router.get('/addbook', async (ctx, next) => {
-  console.log(ctx.query, 'addbook ctx');
-  let _con = ctx.query;
+router.post('/addbook', async (ctx, next) => {
+  // let _con = ctx.query;
+  let _con = ctx.request.body;
   try {
 
   	// 判断这些都不能为空
@@ -74,10 +74,10 @@ router.get('/addbook', async (ctx, next) => {
     resFailure(ctx, err);
   }
 });
-// @apiSampleRequest http://localhost:3000/findBookList
+
 /**
-* @api {post} /findBookList 所有书籍列表
-* @apiDescription 测试post接口
+* @api {get} /bookList 所有书籍列表
+* @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} type 书籍分类
 * @apiParam {int} pageSize 条数
@@ -112,9 +112,9 @@ router.get('/addbook', async (ctx, next) => {
 * @apiVersion 1.0.0
 */
 
-router.get('/findBookList', async (ctx, next) => {
-  let _query = ctx.querystring;
-  // let _query = ctx.request.body;
+router.get('/bookList', async (ctx, next) => {
+  // let _query = ctx.querystring;
+  let _query = ctx.request.body;
 
   try {
   	await bookModel.Book.findAll({

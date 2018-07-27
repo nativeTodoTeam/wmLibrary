@@ -1,9 +1,11 @@
 const Sequelize = require('sequelize');
 const config = require('./index');
 
-var sequelize = new Sequelize(config.database.DATABASE, config.database.USERNAME, config.database.PASSWORD, {
+var sequelize = new Sequelize(config.database.DATABASE,
+    config.database.USERNAME, config.database.PASSWORD, {
     host: config.database.HOST,
     dialect: 'mysql',
+    timezone: '+08:00',
     pool: {
         max: 5,
         min: 0,
@@ -55,5 +57,6 @@ function defineModel(name, attributes) {
 }
 
 module.exports={
-    defineModel
+    defineModel,
+    sequelize
 };
