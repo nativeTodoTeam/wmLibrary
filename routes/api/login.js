@@ -62,7 +62,6 @@ router.post('/login', async (ctx) => {
 
         if (loginResult == 1) {
           resSuccess(ctx, {
-            id: selectResult[0].id,
             token: token,
             name: selectResult[0].name,
           });

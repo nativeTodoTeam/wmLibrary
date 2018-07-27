@@ -1,5 +1,4 @@
 const Sequelize = require('sequelize');
-const moment = require('moment');
 const db = require('../config/db');
 
 const Borrow = db.defineModel('borrow_books', {
@@ -18,18 +17,10 @@ const Borrow = db.defineModel('borrow_books', {
   start_time: {
     type: Sequelize.DATE,
     allowNull: true,
-    get() {
-      return moment(
-        this.getDataValue('start_time')).format('YYYY-MM-DD HH:mm:ss');
-    }
   },
   end_time: {
     type: Sequelize.DATE,
     allowNull: true,
-    get() {
-      return moment(
-        this.getDataValue('end_time')).format('YYYY-MM-DD HH:mm:ss');
-    }
   },
 });
 
@@ -49,15 +40,15 @@ const selectData = async (obj, order) => {
   return JSON.parse(JSON.stringify(callback));
 };
 
-// const updateData = async (values, options) => {
-//   let callback = await Borrow.update(values, {
-//     where: options
-//   }).then(result => {
-//     console.log(`update ${result} books: success`);
-//     return result;
-//   });
-//   return callback[0];
-// };
+const updateData = async (values, options) => {
+  let callback = await Borrow.update(values, {
+    where: options
+  }).then(result => {
+    console.log(`update ${result} books: success`);
+    return result;
+  });
+  return callback[0];
+};
 
 // const deleteData = async (obj) => {
 //   let callback = await Book.destroy({
@@ -73,6 +64,6 @@ module.exports={
   Borrow,
   insertData,
   selectData,
-  // updateData,
+  updateData,
   // deleteData
 };
