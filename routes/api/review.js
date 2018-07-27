@@ -1,6 +1,7 @@
 const router = require('koa-router')();
-const reviewModel = require('../../models/reviewBooks');
+const reviewModel = require('../../models/review_books');
 const userModel = require('../../models/user');
+const borrowModel = require('../../models/borrow_books');
 const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 const db = require('../../config/db').sequelize;
 
@@ -26,8 +27,8 @@ const db = require('../../config/db').sequelize;
 */
 
 router.post('/addReviewBook', async (ctx, next) => {
-  // let _con = ctx.query;
-  let _con = ctx.request.body;
+  let _con = ctx.query;
+  // let _con = ctx.request.body;
   try {
   	
   	// 判断这些都不能为空
@@ -47,14 +48,26 @@ router.post('/addReviewBook', async (ctx, next) => {
 	      content: _con.content,
 
 	    }).then(result => {
-	      console.log(result);
-	      ctx.response.status = 200;
-	      ctx.response.body = {
-			code: 1,
-			msg: '请求成功',
-			data: {}
-		  }
+	    
 	    });
+
+	    // 修改借书状态，3:还书并审核
+	    await borrowModel.Borrow.update(
+	    	{ status: 3 },
+	    	{ where:{
+	    	user_id: _con.userId,
+			book_id: _con.bookId,
+	        }}
+	    )
+
+        ctx.response.status = 200;
+        ctx.response.body = {
+		  code: 1,
+		  msg: '请求成功',
+		  data: {}
+	   }
+	
+	   
   	}
     // await ctx.render('index');
   } catch (err) {
