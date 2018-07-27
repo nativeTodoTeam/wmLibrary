@@ -14,7 +14,7 @@ const registerView = async (ctx, next) => {
 /**
 * @api {post} /reg 用户注册接口
 * @apiGroup users
-* @apiDescription 汪小岗
+* @apiDescription Author:汪小岗
 * @apiParam {string} name 真实姓名 (必填)
 * @apiParam {string} phone 手机号 (必填)
 * @apiParam {string} email 邮箱 (必填)
@@ -135,7 +135,7 @@ const setPasswordView = async (ctx) => {
 /**
 * @api {post} /reg/setPassword 用户设置密码接口
 * @apiGroup users
-* @apiDescription 汪小岗
+* @apiDescription Author:汪小岗
 * @apiParam {string} password 密码 (必填)
 * @apiParam {string} confirmPassword 确认密码 (必填)
 *
