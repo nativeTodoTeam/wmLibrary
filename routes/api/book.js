@@ -112,17 +112,10 @@ router.post('/addbook', async (ctx, next) => {
 * @apiVersion 1.0.0
 */
 
-<<<<<<< HEAD
 router.get('/bookList', async (ctx, next) => {
   // let _query = ctx.querystring;
   let _query = ctx.request.body;
- 
-=======
-router.get('/findBookList', async (ctx, next) => {
-  let _query = ctx.querystring;
-  // let _query = ctx.request.body;
 
->>>>>>> 567f01f3c956691615f5dfc70f77ad0f4a12b85a
   try {
   	await bookModel.Book.findAll({
   	  where: {

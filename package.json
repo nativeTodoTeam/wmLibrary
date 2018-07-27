@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/nativeTodoTeam/wmLibrary#readme",
   "dependencies": {
+    "jsonwebtoken": "^8.3.0",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",
     "koa-cors": "0.0.16",

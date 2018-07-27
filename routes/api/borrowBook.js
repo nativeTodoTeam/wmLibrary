@@ -83,23 +83,17 @@ router.get('/getBorrowBookList', async (ctx) => {
           let searchDate = getMonthStartDay(date);
 
           returnArr.push({
-            id: null,
             book_id: data.id,
-            user_id: null,
             status: -1,
             borrow_time:
               searchDate.getFullYear() + '-' + (searchDate.getMonth() + 1),
-            start_time: '',
-            end_time: '',
-            create_time: '',
-            update_time: ''
           });
 
           for (let j = 0; j < selectResult.length; j++) {
 
             if (new Date(selectResult[j].start_time) - searchDate == 0) {
 
-              Object.assign(returnArr[i], selectResult[j]);
+              returnArr[i].status = 0;
               break;
             }
           }
@@ -136,16 +130,12 @@ router.get('/getBorrowBookList', async (ctx) => {
 router.post('/borrowBook', async (ctx) => {
   try {
     const data = ctx.request.body;
+    const userId = ctx.user.id;
 
     if (!data.book_id || data.book_id == '') {
       parameterErr(ctx, '书id参数不能为空');
       return;
     }
-
-    // if (!data.user_id || data.user_id == '') {
-    //   parameterErr(ctx, '用户id参数不能为空');
-    //   return;
-    // }
 
     if (!data.borrow_time || data.borrow_time == '') {
       parameterErr(ctx, 'borrow_time参数不能为空');
@@ -177,7 +167,7 @@ router.post('/borrowBook', async (ctx) => {
     }
 
     let selectResult = await borrowModel.selectData({
-      [Op.or]: [{book_id: data.book_id}, {user_id: data.user_id}],
+      [Op.or]: [{book_id: data.book_id}, {user_id: userId}],
       status: 0,
       start_time: {
         [Op.lte]: startDate,
@@ -190,7 +180,7 @@ router.post('/borrowBook', async (ctx) => {
     } else {
       let borrowResult = await borrowModel.insertData({
         book_id: data.book_id,
-        user_id: data.user_id,
+        user_id: userId,
         start_time: startDate,
         end_time: endDate,
         status: 0
@@ -228,6 +218,7 @@ router.post('/borrowBook', async (ctx) => {
 router.post('/cancelBorrow', async (ctx) => {
   try {
     const data = ctx.request.body;
+    const userId = ctx.user.id;
 
     if (!data.borrow_id || data.borrow_id == '') {
       parameterErr(ctx, '预约id参数不能为空');
@@ -236,6 +227,7 @@ router.post('/cancelBorrow', async (ctx) => {
 
     let selectResult = await borrowModel.selectData({
       id: data.borrow_id,
+      user_id: userId,
       status: 0
     });
 

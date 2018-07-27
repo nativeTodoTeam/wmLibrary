@@ -3,6 +3,8 @@ const app = new Koa();
 const json = require('koa-json');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser');
+const jsonwebtoken = require('jsonwebtoken');
+const jwt = require('koa-jwt');
 const logger = require('koa-logger');
 const staticFile = require('koa-static');
 const views = require('koa-views');
@@ -18,6 +20,7 @@ const comment = require('./routes/api/comment');
 const login = require('./routes/api/login');
 const borrowBook = require('./routes/api/borrowBook');
 const user = require('./routes/api/user');
+const {resTokenErr} = require('./public/js/route');
 
 // error handler
 onerror(app);
@@ -29,6 +32,52 @@ app.use(cors());
 app.use(bodyparser({
   enableTypes: ['json', 'form', 'text']
 }));
+
+// Custom 401 handling if you don't want to expose koa-jwt errors to users
+app.use((ctx, next) => {
+  return next().catch((err) => {
+    if (401 == err.status) {
+      resTokenErr(ctx, 'token失效');
+    } else {
+      throw err;
+    }
+  });
+});
+
+/* jwt密钥 */
+const secret = 'shared-secret';
+
+app.use(
+  jwt({ secret: secret }).unless({ path: [/^\/public/, /^\/register/, /^\/login/] })
+);
+
+app.use(async (ctx, next) => {
+  try {
+    if (ctx.url.match(/^\/login/) || ctx.url.match(/^\/register/) || ctx.url.match(/^\/public/)) {
+      await next();
+    } else {
+      const token = ctx.header.authorization;  // 获取jwt
+  
+      if (token) {
+        let payload = await jsonwebtoken.verify(token.split(' ')[1], secret);
+        // 解密，获取payload存入ctx
+        if (payload && payload.data && payload.data.id) {
+          ctx.user = {
+            id: payload.data.id
+          };
+          await next();
+        } else {
+          resTokenErr(ctx, 'token失效');
+        } 
+      } else {
+        resTokenErr(ctx, 'token失效');
+      }
+    }
+  } catch(err) {
+    resTokenErr(ctx, 'token失效');
+  }
+});
+
 app.use(json());
 
 // 打印日志
