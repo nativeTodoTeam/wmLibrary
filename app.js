@@ -13,9 +13,14 @@ const cors = require('koa-cors');  // 设置跨域问题
 const index = require('./routes/index');
 const register = require('./routes/api/register');
 const books = require('./routes/api/book');
+<<<<<<< HEAD
+const review = require('./routes/api/review');
+const comment = require('./routes/api/comment');
+=======
 const login = require('./routes/api/login');
 const borrowBook = require('./routes/api/borrowBook');
 const user = require('./routes/api/user');
+>>>>>>> 567f01f3c956691615f5dfc70f77ad0f4a12b85a
 
 // error handler
 onerror(app);
@@ -64,10 +69,15 @@ app.use(async (ctx, next) => {
 app.use(index.routes(), index.allowedMethods())
 app.use(register.routes(), register.allowedMethods());
 app.use(books.routes());
+<<<<<<< HEAD
+app.use(review.routes());
+app.use(comment.routes());
+=======
 app.use(login.routes(), register.allowedMethods());
 app.use(borrowBook.routes(), register.allowedMethods());
 app.use(user.routes());
 
+>>>>>>> 567f01f3c956691615f5dfc70f77ad0f4a12b85a
 
 // error-handling
 app.on('error', (err, ctx) => {

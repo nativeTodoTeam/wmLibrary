@@ -57,5 +57,6 @@ function defineModel(name, attributes) {
 }
 
 module.exports={
-    defineModel
+    defineModel,
+    sequelize
 };
