@@ -26,6 +26,7 @@ router.post('/addComment', async (ctx) => {
 
   // let _con = ctx.query;
   let _con = ctx.request.body;
+  let _userId = ctx.user.id;
   
   try {
 
@@ -43,7 +44,7 @@ router.post('/addComment', async (ctx) => {
   	  await commentModel.Comment.create({
 
   	  	review_id: _con.reviewId,
-  	  	user_id: _con.userId,
+  	  	user_id: _userId,
   	  	content: _con.content,
 
   	  }).then(result => {

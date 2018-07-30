@@ -13,7 +13,6 @@ const Comment = db.defineModel('comments', {
   user_id: {
   	type: Sequelize.INTEGER(11),
   	allowNull: true,
-    field: 'user_id'
   },
   content: {
   	type: Sequelize.STRING,

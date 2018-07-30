@@ -113,9 +113,9 @@ router.post('/addbook', async (ctx, next) => {
 */
 
 router.get('/bookList', async (ctx, next) => {
-  // let _query = ctx.querystring;
-  let _query = ctx.request.body;
-
+  let _query = ctx.query;
+  // let _query = ctx.request.body;
+ 
   try {
   	await bookModel.Book.findAll({
   	  where: {

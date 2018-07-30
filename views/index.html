@@ -61,11 +61,14 @@
         pageSize: 4
       } ;
       $.ajax({
-        url: "http://localhost:3000/findBookList",
+        url: "http://localhost:3000/bookList",
         data: _data,
-        type: "POST",
+        type: "get",
         // cache: false,
         dataType: 'json',
+        headers: {
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoyfSwiZXhwIjoxNTMyNjg0MDk1LCJpYXQiOjE1MzI2ODA0OTV9.-JYmpoNLRotDmfojSE_0CTDrByDjr1xtIOn_PRMDaiQ'
+        },
         success: function(res) {
           console.log(res, '请求的数据')
         },

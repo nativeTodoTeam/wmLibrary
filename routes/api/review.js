@@ -28,6 +28,7 @@ const db = require('../../config/db').sequelize;
 
 router.post('/addReviewBook', async (ctx, next) => {
   let _con = ctx.query;
+  let _userId = ctx.user.id;
   // let _con = ctx.request.body;
   try {
   	
@@ -43,7 +44,7 @@ router.post('/addReviewBook', async (ctx, next) => {
     } else {
 
 	    await reviewModel.ReviewBook.create({
-	      user_id: _con.userId,
+	      user_id: _userId,
 	      book_id: _con.bookId,
 	      content: _con.content,
 
@@ -55,8 +56,8 @@ router.post('/addReviewBook', async (ctx, next) => {
 	    await borrowModel.Borrow.update(
 	    	{ status: 3 },
 	    	{ where:{
-	    	user_id: _con.userId,
-			book_id: _con.bookId,
+	    	  user_id: _userId,
+			  book_id: _con.bookId,
 	        }}
 	    )
 
@@ -103,8 +104,8 @@ router.post('/addReviewBook', async (ctx, next) => {
 */
 router.get('/reviewList', async (ctx) => {
 
-  // let _con = ctx.query;
-  let _con = ctx.request.body;
+  let _con = ctx.query;
+  // let _con = ctx.request.body;
   
   try {
   	
