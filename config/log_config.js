@@ -1,57 +1,101 @@
 /*
-  日志配置文件
+  日志初始化和格式化文件
 */
-const path = require('path');
+const log4js = require('log4js');
 
-//日志根目录
-const baseLogPath = path.resolve(__dirname, '../logs');
+const log_config = require('../config/index');
 
-//错误日志目录
-const errorPath = '/error';
-//错误日志文件名
-const errorFileName = 'error';
-//错误日志输出完整路径
-const errorLogPath = baseLogPath + errorPath + '/' + errorFileName;
+//加载配置文件
+log4js.configure(log_config.log4jsConfig);
 
-//响应日志目录
-const responsePath = '/response';
-//响应日志文件名
-const responseFileName = 'response';
-//响应日志输出完整路径
-const responseLogPath = baseLogPath + responsePath + '/' + responseFileName;
+const errorLogger = log4js.getLogger('error');
+const resLogger = log4js.getLogger('response');
 
-module.exports = {
-  appenders: {
-    //错误日志
-    error: {
-      category: 'errorLogger', //logger名称
-      type: 'file', //日志类型
-      filename: errorLogPath, //日志输出位置
-      // alwaysIncludePattern: true, //是否总是有后缀名
-      // pattern: '-yyyy-MM-dd-hh.log', //后缀，每小时创建一个新的日志文件
-      maxLogSize: 104800,
-      backups: 10,
-      path: errorPath, //自定义属性，错误日志的根目录
-    },
-    //响应日志
-    response: {
-      category: 'resLogger',
-      type: 'file',
-      filename: responseLogPath,
-      maxLogSize: 104800,
-      backups: 10,
-      path: responsePath
-    },
-    console: {
-      category: 'console',
-      type: 'console',
-    }
-  },
-  categories: {
-    error: {appenders: ['error'], level: 'error'},
-    response: {appenders: ['response'], level: 'info'},
-    console: { appenders: ['console'], level: 'info' },
-    default: { appenders: ['response'], level: 'info' },
-  },
-  baseLogPath: baseLogPath //logs根目录
+let logUtil = {};
+
+//封装错误日志
+logUtil.logError = (ctx, error, resTime) => {
+  if (ctx && error) {
+    errorLogger.error(formatError(ctx, error, resTime));
+  }
 };
+
+//封装响应日志
+logUtil.logResponse = (ctx, resTime) => {
+  if (ctx) {
+    resLogger.info(formatRes(ctx, resTime));
+  }
+};
+
+//格式化响应日志
+const formatRes = (ctx, resTime) => {
+  let logText = new String();
+
+  //响应日志开始
+  logText += '\n' + '*************** response log start ***************' + '\n';
+
+  //添加请求日志
+  logText += formatReqLog(ctx.request, resTime);
+
+  //响应状态码
+  logText += 'response status: ' + ctx.status + '\n';
+
+  //响应内容
+  logText += 'response body: ' + '\n' + JSON.stringify(ctx.body) + '\n';
+
+  //响应日志结束
+  logText += '*************** response log end ***************' + '\n';
+
+  return logText;
+};
+
+//格式化错误日志
+const formatError = (ctx, err, resTime) => {
+  let logText = new String();
+
+  //错误信息开始
+  logText += '\n' + '*************** error log start ***************' + '\n';
+
+  //添加请求日志
+  logText += formatReqLog(ctx.request, resTime);
+
+  //错误名称
+  logText += 'err name: ' + err.name + '\n';
+  //错误信息
+  logText += 'err message: ' + err.message + '\n';
+  //错误详情
+  logText += 'err stack: ' + err.stack + '\n';
+
+  //错误信息结束
+  logText += '*************** error log end ***************' + '\n';
+
+  return logText;
+};
+
+//格式化请求日志
+const formatReqLog = (req, resTime) => {
+  let logText = new String();
+
+  let method = req.method;
+  //访问方法
+  logText += 'request method: ' + method + '\n';
+
+  //请求原始地址
+  logText += 'request originalUrl:  ' + req.originalUrl + '\n';
+
+  //客户端ip
+  logText += 'request client ip:  ' + req.ip + '\n';
+
+  //请求参数
+  if (method === 'GET') {
+    logText += 'request query:  ' + JSON.stringify(req.query) + '\n';
+  } else {
+    logText += 'request body: ' + '\n' + JSON.stringify(req.body) + '\n';
+  }
+  //服务器响应时间
+  logText += 'response time: ' + resTime + '\n';
+
+  return logText;
+};
+
+module.exports = logUtil;

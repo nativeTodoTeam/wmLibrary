@@ -8,7 +8,7 @@ const jwt = require('koa-jwt');
 const logger = require('koa-logger');
 const staticFile = require('koa-static');
 const views = require('koa-views');
-const logUtil = require('./utils/log_util');
+const logUtil = require('./config/log_config');
 const cors = require('koa-cors');  // 设置跨域问题
 
 
@@ -37,7 +37,7 @@ app.use(bodyparser({
 app.use((ctx, next) => {
   return next().catch((err) => {
     if (401 == err.status) {
-      resTokenErr(ctx, 'token失效');
+      resTokenErr(ctx, 'token失效1');
     } else {
       throw err;
     }
@@ -67,14 +67,14 @@ app.use(async (ctx, next) => {
           };
           await next();
         } else {
-          resTokenErr(ctx, 'token失效');
+          resTokenErr(ctx, 'token失效2');
         } 
       } else {
-        resTokenErr(ctx, 'token失效');
+        resTokenErr(ctx, 'token失效3');
       }
     }
   } catch(err) {
-    resTokenErr(ctx, 'token失效');
+    resTokenErr(ctx, 'token失效4');
   }
 });
 
@@ -117,8 +117,8 @@ app.use(register.routes(), register.allowedMethods());
 app.use(books.routes());
 app.use(review.routes());
 app.use(comment.routes());
-app.use(login.routes(), register.allowedMethods());
-app.use(borrowBook.routes(), register.allowedMethods());
+app.use(login.routes(), login.allowedMethods());
+app.use(borrowBook.routes(), borrowBook.allowedMethods());
 app.use(user.routes());
 
 // error-handling
