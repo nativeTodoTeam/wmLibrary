@@ -181,17 +181,24 @@ const getBookDetails = async (ctx) => {
     return;
   }
 
-  await bookModel.Book.findById(data.bookId)
-          .then((res) => {
-            if (res && res.dataValues) {
-              resSuccess(ctx, res.dataValues)
-            } else {
-              resSuccess(ctx, '00')
-            }
-          })
-          .catch((err) => {
-            resFailure(ctx, err);
-          })
+  try {
+
+    await bookModel.Book.findById(data.bookId)
+            .then((res) => {
+              if (res && res.dataValues) {
+                resSuccess(ctx, res.dataValues)
+              } else {
+                resSuccess(ctx, '00')
+              }
+            })
+            .catch((err) => {
+              resFailure(ctx, err);
+            })
+
+  } catch (err) {
+    resFailure(ctx, err);
+  }
+
 
 }
 

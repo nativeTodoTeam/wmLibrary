@@ -294,9 +294,14 @@ const getUserBorrowBooks = async (ctx) => {
     return;
   }
 
+  let sql = 'select a.type_id,a.title,a.author,a.url,a.content,a.create_time,'+
+    'a.update_time,a.status as bookStatus,b.book_id,b.status,b.start_time,' +
+    'b.end_time from books a,borrow_books b where b.user_id=' + data.userId +
+    ' and a.id=b.book_id order by a.create_time desc';
+
   try {
 
-    await db.query(`select a.type_id,a.title,a.author,a.url,a.content,a.create_time,a.update_time,a.status as bookStatus,b.book_id,b.status,b.start_time,b.end_time from books a,borrow_books b where b.user_id=${data.userId} and a.id=b.book_id order by a.create_time desc`)
+    await db.query(sql)
       .spread(result => {
         console.log(result)
         ctx.response.status = 200;
@@ -308,7 +313,7 @@ const getUserBorrowBooks = async (ctx) => {
       })
 
   } catch (err) {
-    console.log(err)
+    resFailure(ctx, err);
   }
 
 }
