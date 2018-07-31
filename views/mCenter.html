@@ -73,6 +73,8 @@
   </div>
 
   <button class = "userOut" style = 'margin-top: 100px;'>退出登录</button>
+
+  <button class = "borrowBook" style = 'margin-top: 100px;'>我的借阅</button>
   <script>
 
     $('.bookBtn').click(() => {
@@ -163,6 +165,32 @@
 
           if (res.code == '1') {
             alert('退出成功！！')
+          }
+
+          if (res.code == '0') {
+            alert('请求失败')
+          }
+
+          if (res.code == '2') {
+            alert('参数错误')
+          }
+
+        }
+      })
+
+    })
+
+    $('.borrowBook').click(() => {
+      $.ajax({
+        type: 'GET',
+        url: `http://localhost:3000/getUserBorrowBooks`,
+        data: {
+          userId: 1
+        },
+        success: function(res) {
+
+          if (res.code == '1') {
+            alert('查询成功！！')
           }
 
           if (res.code == '0') {

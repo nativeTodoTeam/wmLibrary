@@ -3,8 +3,6 @@ const app = new Koa();
 const json = require('koa-json');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser');
-const jsonwebtoken = require('jsonwebtoken');
-const jwt = require('koa-jwt');
 const logger = require('koa-logger');
 const staticFile = require('koa-static');
 const views = require('koa-views');
@@ -20,7 +18,6 @@ const comment = require('./routes/api/comment');
 const login = require('./routes/api/login');
 const borrowBook = require('./routes/api/borrowBook');
 const user = require('./routes/api/user');
-const {resTokenErr} = require('./public/js/route');
 
 // error handler
 onerror(app);
@@ -120,6 +117,7 @@ app.use(comment.routes());
 app.use(login.routes(), login.allowedMethods());
 app.use(borrowBook.routes(), borrowBook.allowedMethods());
 app.use(user.routes());
+
 
 // error-handling
 app.on('error', (err, ctx) => {

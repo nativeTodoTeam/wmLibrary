@@ -42,37 +42,39 @@ const mCenterView = async (ctx) => {
 const getUserInfo = async (ctx) => {
   let data = ctx.request.query;
 
-  if (!data.userId) {
-    routerConfig.parameterErr(ctx, {});
-    return;
+  try {
+
+    if (!data.userId) {
+      routerConfig.parameterErr(ctx, {});
+      return;
+    }
+
+    await usersModel.Users.findById(data.userId)
+            .then((res) => {
+              let data = {
+                "id": res.dataValues.id,
+                "name": res.dataValues.name,
+                "email": res.dataValues.email,
+                "phone": res.dataValues.phone,
+                "url": res.dataValues.url,
+                "signature": res.dataValues.signature,
+                "company_id": res.dataValues.company_id,
+                "status": res.dataValues.status,
+                "create_time": res.dataValues.create_time,
+                "update_time": res.dataValues.update_time,
+                "position": res.dataValues.position,
+                "reg_status": res.dataValues.reg_status
+              }
+              routerConfig.resSuccess(ctx, data)
+            })
+
+  } catch (err) {
+    routerConfig.resFailure(ctx, err)
   }
-
-  await usersModel.findById(data.userId)
-          .then((res) => {
-            let data = {
-              "id": res.dataValues.id,
-              "name": res.dataValues.name,
-              "email": res.dataValues.email,
-              "phone": res.dataValues.phone,
-              "url": res.dataValues.url,
-              "signature": res.dataValues.signature,
-              "company_id": res.dataValues.company_id,
-              "status": res.dataValues.status,
-              "create_time": res.dataValues.create_time,
-              "update_time": res.dataValues.update_time,
-              "position": res.dataValues.position,
-              "reg_status": res.dataValues.reg_status
-            }
-            routerConfig.resSuccess(ctx, data)
-          })
-          .catch((err) => {
-            routerConfig.resFailure(ctx, err)
-          })
-
 }
 
 /**
-* @api {POST} /userInfo 更新用户信息接口
+* @api {POST} /updateUserInfo 更新用户信息接口
 * @apiGroup users
 * @apiDescription Author:汪小岗
 * @apiParam {Number} userId 用户id (必填)
@@ -94,54 +96,60 @@ const getUserInfo = async (ctx) => {
 const updateUserInfo = async (ctx) => {
   let data = ctx.request.body;
 
-  if (!data.userId) {
-    routerConfig.parameterErr(ctx, {});
-    return;
-  }
+  try {
 
-  // 格式验证
-  if (!Utils.isChineseAndEnglish(data.position)) {
-    routerConfig.parameterErr(ctx, '职务格式不正确');
-    return;
-  }
-
-  if (data.signature && ((data.signature.length > 16) ||
-    (data.signature.indexOf('\n') > -1))) {
-    routerConfig.parameterErr(ctx, '签名格式不正确');
-    return;
-  }
-
-  // 不可修改字段
-  if (data.name || data.phone || data.email) {
-    routerConfig.parameterErr(ctx, {});
-    return;
-  }
-
-  // 判断参数是否全为空
-  if (!data.position && !data.company_id && !data.signature) {
-    routerConfig.parameterErr(ctx, {});
-    return;
-  }
-
-  let _data = {};
-
-  for(key in data) {
-    if (key !== 'id') {
-      _data[key] = data[key];
+    if (!data.userId) {
+      routerConfig.parameterErr(ctx, {});
+      return;
     }
-  }
 
-  await usersModel.update(_data, {
-    where: {
-      id: data.userId,
+    // 格式验证
+    if (!Utils.isChineseAndEnglish(data.position)) {
+      routerConfig.parameterErr(ctx, '职务格式不正确');
+      return;
     }
-  })
-    .then((res) => {
-      routerConfig.resSuccess(ctx, {})
+
+    if (data.signature && ((data.signature.length > 16) ||
+      (data.signature.indexOf('\n') > -1))) {
+      routerConfig.parameterErr(ctx, '签名格式不正确');
+      return;
+    }
+
+    // 不可修改字段
+    if (data.name || data.phone || data.email) {
+      routerConfig.parameterErr(ctx, {});
+      return;
+    }
+
+    // 判断参数是否全为空
+    if (!data.position && !data.company_id && !data.signature) {
+      routerConfig.parameterErr(ctx, {});
+      return;
+    }
+
+    let _data = {};
+
+    for(key in data) {
+      if (key !== 'id') {
+        _data[key] = data[key];
+      }
+    }
+
+    await usersModel.Users.update(_data, {
+      where: {
+        id: data.userId,
+      }
     })
-    .catch((err) => {
-      routerConfig.resFailure(ctx, err)
-    })
+      .then((res) => {
+        routerConfig.resSuccess(ctx, '更新成功')
+      })
+      .catch((err) => {
+        routerConfig.resFailure(ctx, err)
+      })
+
+  } catch (err) {
+    routerConfig.resFailure(ctx, err)
+  }
 
 }
 
@@ -165,51 +173,56 @@ const updateUserInfo = async (ctx) => {
 */
 const userOut = async (ctx) => {
   let data = ctx.request.body;
-
-  if (!data.userId) {
-    routerConfig.parameterErr(ctx, {});
-    return;
-  }
-
   let isUserId = false;
 
-  // 查找该用户是否存在
-  await usersModel.findById(data.userId)
-    .then((res) => {
-      if (res) {
-        isUserId = true;
-      } else {
-        routerConfig.parameterErr(ctx, '用户不存在')
-      }
+  try {
 
-    })
-    .catch((err) => {
-      routerConfig.resFailure(ctx, err)
-    })
-
-  if (!isUserId) {
-    return;
-  }
-
-  await usersModel.update({ token: null }, {
-    where: {
-      id: data.userId
+    if (!data.userId) {
+      routerConfig.parameterErr(ctx, {});
+      return;
     }
-  })
-    .then((res) => {
 
-      if (res[0] == 1) {
-        routerConfig.resSuccess(ctx, {})
+    // 查找该用户是否存在
+    await usersModel.Users.findById(data.userId)
+      .then((res) => {
+        if (res) {
+          isUserId = true;
+        } else {
+          routerConfig.parameterErr(ctx, '用户不存在')
+        }
+
+      })
+      .catch((err) => {
+        routerConfig.resFailure(ctx, err)
+      })
+
+    if (!isUserId) {
+      return;
+    }
+
+    await usersModel.Users.update({ token: null }, {
+      where: {
+        id: data.userId
       }
-
-      if (res[0] == 0) {
-        routerConfig.resSuccess(ctx, '')
-      }
-
     })
-    .catch((err) => {
-      routerConfig.resFailure(ctx, err)
-    })
+      .then((res) => {
+
+        if (res[0] == 1) {
+          routerConfig.resSuccess(ctx, {})
+        }
+
+        if (res[0] == 0) {
+          routerConfig.resSuccess(ctx, '')
+        }
+
+      })
+      .catch((err) => {
+        routerConfig.resFailure(ctx, err)
+      })
+
+  } catch (err) {
+    routerConfig.resFailure(ctx, err)
+  }
 
 }
 

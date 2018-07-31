@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../config/db');
 
 const Borrow = db.defineModel('borrow_books', {
-  book_id: {
+  id: {
     type: Sequelize.INTEGER(11),
     allowNull: true
   },

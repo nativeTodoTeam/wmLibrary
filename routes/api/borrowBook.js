@@ -1,6 +1,9 @@
 const router = require('koa-router')();
 const borrowModel = require('../../models/borrow_books');
+const booksModel = require('../../models/books');
+const usersModel = require('../../models/user');
 const Sequelize = require('sequelize');
+const db = require('../../config/db').sequelize;
 const Op = Sequelize.Op;
 const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 const {
@@ -250,5 +253,71 @@ router.post('/cancelBorrow', async (ctx) => {
     resFailure(ctx, err);
   }
 });
+
+/**
+* @api {GET} /userInfo?userId=3 用户借阅书籍信息接口
+* @apiGroup Book
+* @apiDescription Author:汪小岗
+* @apiParam {Number} userId 用户id (必填)
+*
+* @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
+* @apiSuccess {string} msg 请求成功/失败
+* @apiSuccess {string} data 返回数据
+* @apiSuccessExample {Array} Success-Response:
+* {
+    code: 1,
+    msg: '请求成功',
+    data: [
+      {
+        "type_id": 1,
+        "title": "PHP核心技术与最佳实践",
+        "author": "列旭松、陈文",
+        "url": null,
+        "content": "这是一个PHP实践的介绍呀",
+        "create_time": "2018-07-24T06:09:56.000Z",
+        "update_time": "2018-07-24T06:09:56.000Z",
+        "bookStatus": null,
+        "book_id": 1,
+        "status": 1,
+        "start_time": "2018-10-31T16:00:00.000Z",
+        "end_time": "2018-11-29T16:00:00.000Z"
+      }
+    ]
+* }
+* @apiVersion 1.0.0
+*/
+const getUserBorrowBooks = async (ctx) => {
+  let data = ctx.request.query;
+
+  if (!data.userId) {
+    parameterErr(ctx, {});
+    return;
+  }
+
+  let sql = 'select a.type_id,a.title,a.author,a.url,a.content,a.create_time,'+
+    'a.update_time,a.status as bookStatus,b.book_id,b.status,b.start_time,' +
+    'b.end_time from books a,borrow_books b where b.user_id=' + data.userId +
+    ' and a.id=b.book_id order by a.create_time desc';
+
+  try {
+
+    await db.query(sql)
+      .spread(result => {
+        console.log(result)
+        ctx.response.status = 200;
+        ctx.response.body = {
+          code: 1,
+          msg: '请求成功',
+          data: result
+        };
+      })
+
+  } catch (err) {
+    resFailure(ctx, err);
+  }
+
+}
+
+router.get('/getUserBorrowBooks', getUserBorrowBooks);
 
 module.exports = router;

@@ -38,92 +38,97 @@ const register = async (ctx, next) => {
 
   let data = JSON.parse(ctx.request.body);
 
-  // 判断参数是否为空
-  if (!data.name || !data.phone || !data.email || !data.position ||
-      !data.company_id) {
-    routerConfig.parameterErr(ctx, {});
-    return;
-  }
+  try {
 
-  // 格式验证
-  if (!Utils.isChineseAndEnglish(data.name)) {
-    routerConfig.parameterErr(ctx, '姓名格式不正确');
-    return;
-  }
-
-  if (!Utils.isEmail(data.email)) {
-    routerConfig.parameterErr(ctx, '邮箱格式不正确');
-    return;
-  }
-
-  if (!Utils.isValidMobileNo(data.phone)) {
-    routerConfig.parameterErr(ctx, '手机号格式不正确');
-    return;
-  }
-
-  if (!Utils.isChineseAndEnglish(data.position)) {
-    routerConfig.parameterErr(ctx, '职务格式不正确');
-    return;
-  }
-
-  if (!Utils.isEmail(data.email)) {
-    routerConfig.parameterErr(ctx, '不是公司邮箱');
-    return;
-  }
-
-  // 邮箱验证状态
-  let email_status = '00';
-
-  // 验证邮箱
-  await usersModel.findAll({
-    where: {
-      email: data.email
+    // 判断参数是否为空
+    if (!data.name || !data.phone || !data.email || !data.position ||
+        !data.company_id) {
+      routerConfig.parameterErr(ctx, {});
+      return;
     }
-  })
-    .then((res) => {
 
-      // 检验email是否所属本公司  00：不属于
-      if (res.length == 1) {
+    // 格式验证
+    if (!Utils.isChineseAndEnglish(data.name)) {
+      routerConfig.parameterErr(ctx, '姓名格式不正确');
+      return;
+    }
 
-        //检验该email是否已注册  01:已注册、02:未注册
-        if (res[0].dataValues.reg_status == 1) {
-          email_status = '01';
-          routerConfig.resSuccess(ctx, '01');
+    if (!Utils.isEmail(data.email)) {
+      routerConfig.parameterErr(ctx, '邮箱格式不正确');
+      return;
+    }
+
+    if (!Utils.isValidMobileNo(data.phone)) {
+      routerConfig.parameterErr(ctx, '手机号格式不正确');
+      return;
+    }
+
+    if (!Utils.isChineseAndEnglish(data.position)) {
+      routerConfig.parameterErr(ctx, '职务格式不正确');
+      return;
+    }
+
+    if (!Utils.isEmail(data.email)) {
+      routerConfig.parameterErr(ctx, '不是公司邮箱');
+      return;
+    }
+
+    // 邮箱验证状态
+    let email_status = '00';
+
+    // 验证邮箱
+    await usersModel.Users.findAll({
+      where: {
+        email: data.email
+      }
+    })
+      .then((res) => {
+
+        // 检验email是否所属本公司  00：不属于
+        if (res.length == 1) {
+
+          //检验该email是否已注册  01:已注册、02:未注册
+          if (res[0].dataValues.reg_status == 1) {
+            email_status = '01';
+            routerConfig.resSuccess(ctx, '01');
+          } else {
+            email_status = '02';
+          }
+
         } else {
-          email_status = '02';
+          email_status = '00';
+          routerConfig.resSuccess(ctx, '00');
         }
 
-      } else {
-        email_status = '00';
-        routerConfig.resSuccess(ctx, '00');
-      }
+      })
+      .catch((err) => {
+        routerConfig.resFailure(ctx, err);
+      })
 
-    })
-    .catch((err) => {
-      routerConfig.resFailure(ctx, err);
-    })
+    // 若邮箱验证不符则退出
+    if (email_status == '00' || email_status == '01') {
+      return;
+    }
 
-  // 若邮箱验证不符则退出
-  if (email_status == '00' || email_status == '01') {
-    return;
+    // 将注册状态标记为已注册
+    data.reg_status = 1;
+
+    // 注册更新用户信息
+    await usersModel.Users.update(data, {
+      where: {
+        email: data.email
+      },
+      silent: true
+    })
+      .then((res) => {
+        routerConfig.resSuccess(ctx, '注册成功')
+      })
+      .catch((err) => {
+        routerConfig.resFailure(ctx, err)
+      })
+  } catch (err) {
+    routerConfig.resFailure(ctx, err)
   }
-
-  // 将注册状态标记为已注册
-  data.reg_status = 1;
-
-  // 注册更新用户信息
-  await usersModel.update(data, {
-    where: {
-      email: data.email
-    },
-    silent: true
-  })
-    .then((res) => {
-      routerConfig.resSuccess(ctx, '注册成功')
-    })
-    .catch((err) => {
-      routerConfig.resFailure(ctx, err)
-    })
 
 };
 
@@ -158,34 +163,39 @@ const setPassword = async (ctx) => {
   // 创建 md5 算法加密
   let md5 = crypto.createHash('md5');
 
-  if (data.password && data.confirmPassword) {
+  try {
 
-    if (data.password === data.confirmPassword) {
+    if (data.password && data.confirmPassword) {
 
-      // hex十六进制
-      md5.update(data.password);
-      let md5Password = md5.digest('hex');
+      if (data.password === data.confirmPassword) {
 
-      await usersModel.update({
-        password: md5Password
-      }, {
-        where: {
-          id: 3,
-        },
-        silent: true
-      })
-        .then((res) => {
-          routerConfig.resSuccess(ctx, {})
+        // hex十六进制
+        md5.update(data.password);
+        let md5Password = md5.digest('hex');
+
+        await usersModel.Users.update({
+          password: md5Password
+        }, {
+          where: {
+            id: 3,
+          },
+          silent: true
         })
-        .catch((res) => {
-          routerConfig.resFailure(ctx, {})
-        })
+          .then((res) => {
+            routerConfig.resSuccess(ctx, '修改成功')
+          })
+          .catch((err) => {
+            routerConfig.resFailure(ctx, '修改失败')
+          })
+      } else {
+        routerConfig.parameterErr(ctx, {})
+      }
+
     } else {
       routerConfig.parameterErr(ctx, {})
     }
-
-  } else {
-    routerConfig.parameterErr(ctx, {})
+  } catch (err) {
+    routerConfig.resFailure(ctx, err)
   }
 
 }
