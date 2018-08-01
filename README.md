@@ -1,7 +1,10 @@
 # wmLibrary
 蛙鸣图书馆
-## 启动
+## 启动server
 * npm start
+
+## 启动App
+* wmApp目录下 ios端:react-native run-ios  android端:react-native run-android
 
 ## 接口文档
 * npm run apidoc
@@ -15,3 +18,4 @@
 * routes -> api 接口目录
 * utils 格式文件
 * views 页面文件
+* views Native app
