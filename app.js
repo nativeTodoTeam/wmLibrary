@@ -8,7 +8,7 @@ const jwt = require('koa-jwt');
 const logger = require('koa-logger');
 const staticFile = require('koa-static');
 const views = require('koa-views');
-const logUtil = require('./utils/log_util');
+const logUtil = require('./config/log_config');
 const cors = require('koa-cors');  // 设置跨域问题
 const path = require('path')
 
@@ -48,16 +48,17 @@ app.use((ctx, next) => {
 /* jwt密钥 */
 const secret = 'shared-secret';
 
+//jwt 报错暂时注释掉
+
 app.use(
-  jwt({ secret: secret }).unless({ path: [/^\/public/, /^\/register/, /^\/login/, /^\/index/] })
+  jwt({ secret: secret }).unless({ path: [/^\/public/, /^\/register/, /^\/login/] })
 );
 
 app.use(async (ctx, next) => {
   try {
-    if (ctx.url.match(/^\/login/) || ctx.url.match(/^\/register/) || ctx.url.match(/^\/public/) || ctx.url.match(/^\/index/)) {
+    if (ctx.url.match(/^\/login/) || ctx.url.match(/^\/register/) || ctx.url.match(/^\/public/)) {
       await next();
     } else {
-
       const token = ctx.header.authorization;  // 获取jwt
 
       if (token) {
@@ -69,14 +70,14 @@ app.use(async (ctx, next) => {
           };
           await next();
         } else {
-          resTokenErr(ctx, 'token失效');
+          resTokenErr(ctx, 'token失效2');
         }
       } else {
-        resTokenErr(ctx, 'token失效');
+        resTokenErr(ctx, 'token失效3');
       }
     }
   } catch(err) {
-    resTokenErr(ctx, 'token失效');
+    resTokenErr(ctx, 'token失效4');
   }
 });
 
