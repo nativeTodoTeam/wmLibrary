@@ -46,36 +46,36 @@ const secret = 'shared-secret';
 
 //jwt 报错暂时注释掉
 
-// app.use(
-//   jwt({ secret: secret }).unless({ path: [/^\/public/, /^\/register/, /^\/login/] })
-// );
-//
-// app.use(async (ctx, next) => {
-//   try {
-//     if (ctx.url.match(/^\/login/) || ctx.url.match(/^\/register/) || ctx.url.match(/^\/public/)) {
-//       await next();
-//     } else {
-//       const token = ctx.header.authorization;  // 获取jwt
-//
-//       if (token) {
-//         let payload = await jsonwebtoken.verify(token.split(' ')[1], secret);
-//         // 解密，获取payload存入ctx
-//         if (payload && payload.data && payload.data.id) {
-//           ctx.user = {
-//             id: payload.data.id
-//           };
-//           await next();
-//         } else {
-//           resTokenErr(ctx, 'token失效2');
-//         }
-//       } else {
-//         resTokenErr(ctx, 'token失效3');
-//       }
-//     }
-//   } catch(err) {
-//     resTokenErr(ctx, 'token失效4');
-//   }
-// });
+app.use(
+  jwt({ secret: secret }).unless({ path: [/^\/public/, /^\/register/, /^\/login/] })
+);
+
+app.use(async (ctx, next) => {
+  try {
+    if (ctx.url.match(/^\/login/) || ctx.url.match(/^\/register/) || ctx.url.match(/^\/public/)) {
+      await next();
+    } else {
+      const token = ctx.header.authorization;  // 获取jwt
+
+      if (token) {
+        let payload = await jsonwebtoken.verify(token.split(' ')[1], secret);
+        // 解密，获取payload存入ctx
+        if (payload && payload.data && payload.data.id) {
+          ctx.user = {
+            id: payload.data.id
+          };
+          await next();
+        } else {
+          resTokenErr(ctx, 'token失效2');
+        }
+      } else {
+        resTokenErr(ctx, 'token失效3');
+      }
+    }
+  } catch(err) {
+    resTokenErr(ctx, 'token失效4');
+  }
+});
 
 app.use(json());
 
