@@ -1,8 +1,8 @@
 const router = require('koa-router')();
-const bookModel = require('../models/books');
+const bookModel = require('../../models/books');
 
  // 将views设为模板的情况下, 可以用render
-router.get('/', async (ctx, next) => {
+router.get('/page/*', async (ctx, next) => {
   // await bookModel.insertData({
   //   title: '测试书籍',
   // })
@@ -22,8 +22,8 @@ router.get('/', async (ctx, next) => {
   // .catch(e => {
   //   console.log(e);
   // })
-  console.log('是来到了只饿了吗')
+
   await ctx.render('login');
 });
 
- module.exports = router
+ module.exports = router;

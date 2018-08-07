@@ -13588,7 +13588,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */].use(__WEBPACK_IMPORTED_MODU
 
 const routes = [
   {
-    path: '/page/login',
+    path: '/page/addBook',
     name: 'addBook',
     component: __WEBPACK_IMPORTED_MODULE_2__containers_addBook_vue__["a" /* default */]
   }

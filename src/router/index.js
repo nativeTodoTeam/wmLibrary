@@ -6,7 +6,7 @@ Vue.use(Router)
 
 const routes = [
   {
-    path: '/',
+    path: '/page/addBook',
     name: 'addBook',
     component: AddBook
   }

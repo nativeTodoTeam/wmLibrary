@@ -13,7 +13,7 @@ const {
 } = require('../../utils/date');
 
 /**
-* @api {get} /getBorrowBookList 获取借阅情况接口
+* @api {get} /api/getBorrowBookList 获取借阅情况接口
 * @apiDescription 获取借阅情况接口 - 史沐卉
 * @apiGroup Book
 * @apiParam {int} id 书id
@@ -37,11 +37,11 @@ const {
         }
     ]
 *  }
-* @apiSampleRequest http://localhost:3000/getBorrowBookList?id=1
+* @apiSampleRequest http://localhost:3000/api/getBorrowBookList?id=1
 * @apiVersion 1.0.0
 */
 
-router.get('/getBorrowBookList', async (ctx) => {
+router.get('/api/getBorrowBookList', async (ctx) => {
   try {
     const data = ctx.request.query;
 
@@ -112,7 +112,7 @@ router.get('/getBorrowBookList', async (ctx) => {
 });
 
 /**
-* @api {post} /borrowBook 借书/预约接口
+* @api {post} /api/borrowBook 借书/预约接口
 * @apiDescription 借书/预约接口 - 史沐卉
 * @apiGroup Book
 * @apiParam {int} book_id 书id
@@ -126,11 +126,11 @@ router.get('/getBorrowBookList', async (ctx) => {
       msg: '请求成功',
       data: ''
 *  }
-* @apiSampleRequest http://localhost:3000/borrowBook
+* @apiSampleRequest http://localhost:3000/api/borrowBook
 * @apiVersion 1.0.0
 */
 
-router.post('/borrowBook', async (ctx) => {
+router.post('/api/borrowBook', async (ctx) => {
   try {
     const data = ctx.request.body;
     const userId = ctx.user.id;
@@ -201,7 +201,7 @@ router.post('/borrowBook', async (ctx) => {
 });
 
 /**
-* @api {post} /cancelBorrow 取消预约接口
+* @api {post} /api/cancelBorrow 取消预约接口
 * @apiDescription 取消预约接口 - 史沐卉
 * @apiGroup Book
 * @apiParam {int} borrow_id 预约id
@@ -214,11 +214,11 @@ router.post('/borrowBook', async (ctx) => {
       msg: '请求成功',
       data: ''
 *  }
-* @apiSampleRequest http://localhost:3000/cancelBorrow
+* @apiSampleRequest http://localhost:3000/api/cancelBorrow
 * @apiVersion 1.0.0
 */
 
-router.post('/cancelBorrow', async (ctx) => {
+router.post('/api/cancelBorrow', async (ctx) => {
   try {
     const data = ctx.request.body;
     const userId = ctx.user.id;

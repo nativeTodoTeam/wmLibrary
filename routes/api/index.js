@@ -3,7 +3,7 @@ const bookModel = require('../../models/books');
 const {resSuccess, resFailure} = require('../../public/js/route');
 
 /**
-* @api {get} /test?id=0 test
+* @api {get} /api/test?id=0 test
 * @apiDescription 测试get接口
 * @apiGroup Book
 * @apiParam {int} id 书id
@@ -16,10 +16,10 @@ const {resSuccess, resFailure} = require('../../public/js/route');
       msg: '请求成功',
       data: []
 *  }
-* @apiSampleRequest http://localhost:3000/test_post
+* @apiSampleRequest http://localhost:3000/api/test_post
 * @apiVersion 1.0.0
 */
-router.get('/test', async (ctx) => {
+router.get('/api/test', async (ctx) => {
   try {
     // await bookModel.insertData({
     //   title: '测试书籍',
@@ -56,7 +56,7 @@ router.get('/test', async (ctx) => {
 });
 
 /**
-* @api {post} /test_post test_post
+* @api {post} /api/test_post test_post
 * @apiDescription 测试post接口
 * @apiGroup Book
 * @apiParam {string} title 书名
@@ -69,11 +69,11 @@ router.get('/test', async (ctx) => {
       msg: '请求成功',
       data: []
 *  }
-* @apiSampleRequest http://localhost:3000/test_post
+* @apiSampleRequest http://localhost:3000/api/test_post
 * @apiVersion 1.0.0
 */
 
-router.get('/test_post', async (ctx) => {
+router.get('/api/test_post', async (ctx) => {
   console.log(ctx.request.body);
   try {
     const book = ctx.request.body;
