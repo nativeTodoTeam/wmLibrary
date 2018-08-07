@@ -6,7 +6,8 @@
   "scripts": {
     "start": "supervisor bin/www",
     "apidoc": "apidoc -i routes/ -o public/apidoc/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -35,7 +36,10 @@
     "moment": "^2.22.2",
     "mysql2": "^1.5.3",
     "node-uuid": "^1.4.8",
-    "sequelize": "^4.38.0"
+    "sequelize": "^4.38.0",
+    "vue": "^2.5.2",
+    "vue-resource": "^1.5.1",
+    "vue-router": "^3.0.1"
   },
   "apidoc": {
     "title": "接口文档",
@@ -43,8 +47,18 @@
   },
   "devDependencies": {
     "babel-eslint": "^8.2.6",
+    "css-loader": "^1.0.0",
     "eslint": "^5.1.0",
     "eslint-plugin-promise": "^3.8.0",
-    "koa-cors": "0.0.16"
+    "koa-cors": "0.0.16",
+    "node-sass": "^4.9.2",
+    "sass-loader": "^6.0.7",
+    "vue-loader": "^13.3.0",
+    "vue-style-loader": "^3.0.1",
+    "vue-template-compiler": "^2.5.2",
+    "webpack": "^3.6.0",
+    "webpack-bundle-analyzer": "^2.9.0",
+    "webpack-dev-server": "^2.9.1",
+    "webpack-merge": "^4.1.0"
   }
 }

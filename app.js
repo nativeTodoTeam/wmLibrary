@@ -10,7 +10,7 @@ const staticFile = require('koa-static');
 const views = require('koa-views');
 const logUtil = require('./utils/log_util');
 const cors = require('koa-cors');  // 设置跨域问题
-
+const path = require('path')
 
 const index = require('./routes/index');
 const register = require('./routes/api/register');
@@ -33,50 +33,51 @@ app.use(bodyparser({
   enableTypes: ['json', 'form', 'text']
 }));
 
-// Custom 401 handling if you don't want to expose koa-jwt errors to users
-app.use((ctx, next) => {
-  return next().catch((err) => {
-    if (401 == err.status) {
-      resTokenErr(ctx, 'token失效');
-    } else {
-      throw err;
-    }
-  });
-});
+//Custom 401 handling if you don't want to expose koa-jwt errors to users
+// app.use((ctx, next) => {
+//   return next().catch((err) => {
+//     if (401 == err.status) {
+//       resTokenErr(ctx, 'token失效');
+//     } else {
+//       throw err;
+//     }
+//   });
+// });
 
 /* jwt密钥 */
 const secret = 'shared-secret';
+//
+// app.use(
+//   jwt({ secret: secret }).unless({ path: [/^\/public/, /^\/register/, /^\/login/, /^\/index/] })
+// );
 
-app.use(
-  jwt({ secret: secret }).unless({ path: [/^\/public/, /^\/register/, /^\/login/] })
-);
-
-app.use(async (ctx, next) => {
-  try {
-    if (ctx.url.match(/^\/login/) || ctx.url.match(/^\/register/) || ctx.url.match(/^\/public/)) {
-      await next();
-    } else {
-      const token = ctx.header.authorization;  // 获取jwt
-  
-      if (token) {
-        let payload = await jsonwebtoken.verify(token.split(' ')[1], secret);
-        // 解密，获取payload存入ctx
-        if (payload && payload.data && payload.data.id) {
-          ctx.user = {
-            id: payload.data.id
-          };
-          await next();
-        } else {
-          resTokenErr(ctx, 'token失效');
-        } 
-      } else {
-        resTokenErr(ctx, 'token失效');
-      }
-    }
-  } catch(err) {
-    resTokenErr(ctx, 'token失效');
-  }
-});
+// app.use(async (ctx, next) => {
+//   try {
+//     if (ctx.url.match(/^\/login/) || ctx.url.match(/^\/register/) || ctx.url.match(/^\/public/) || ctx.url.match(/^\/index/)) {
+//       await next();
+//     } else {
+//
+//       const token = ctx.header.authorization;  // 获取jwt
+//
+//       if (token) {
+//         let payload = await jsonwebtoken.verify(token.split(' ')[1], secret);
+//         // 解密，获取payload存入ctx
+//         if (payload && payload.data && payload.data.id) {
+//           ctx.user = {
+//             id: payload.data.id
+//           };
+//           await next();
+//         } else {
+//           resTokenErr(ctx, 'token失效');
+//         }
+//       } else {
+//         resTokenErr(ctx, 'token失效');
+//       }
+//     }
+//   } catch(err) {
+//     resTokenErr(ctx, 'token失效');
+//   }
+// });
 
 app.use(json());
 
@@ -88,6 +89,7 @@ app.use(views(__dirname + '/views'));
 
 // 将 public 目录设置为静态资源目录
 app.use(staticFile(__dirname + '/public'));
+app.use(staticFile(path.join(__dirname, '.', 'dist')))
 
 // log4js
 app.use(async (ctx, next) => {
@@ -112,9 +114,9 @@ app.use(async (ctx, next) => {
 
 // routes
 // allowedMethods 用于校验请求的方法, 如果用 post 请求访问 get 接口，就会直接返回失败
-app.use(index.routes(), index.allowedMethods())
 app.use(register.routes(), register.allowedMethods());
-app.use(books.routes());
+app.use(index.routes(), register.allowedMethods());
+app.use(books.routes(), register.allowedMethods());
 app.use(review.routes());
 app.use(comment.routes());
 app.use(login.routes(), register.allowedMethods());

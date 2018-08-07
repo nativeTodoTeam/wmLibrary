@@ -28,6 +28,7 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 router.post('/addbook', async (ctx, next) => {
   // let _con = ctx.query;
   let _con = ctx.request.body;
+  console.log(_con.type, 'con');
   try {
 
   	// 判断这些都不能为空
@@ -115,7 +116,7 @@ router.post('/addbook', async (ctx, next) => {
 router.get('/bookList', async (ctx, next) => {
   let _query = ctx.query;
   // let _query = ctx.request.body;
- 
+
   try {
   	await bookModel.Book.findAll({
   	  where: {

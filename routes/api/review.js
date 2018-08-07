@@ -22,7 +22,7 @@ const db = require('../../config/db').sequelize;
       msg: '请求成功',
       data: {}
 *  }
-* 
+*
 * @apiVersion 1.0.0
 */
 
@@ -31,7 +31,7 @@ router.post('/addReviewBook', async (ctx, next) => {
   let _userId = ctx.user.id;
   // let _con = ctx.request.body;
   try {
-  	
+
   	// 判断这些都不能为空
   	if (!_con.userId || _con.userId == '') {
   	  parameterErr(ctx, {});
@@ -49,7 +49,7 @@ router.post('/addReviewBook', async (ctx, next) => {
 	      content: _con.content,
 
 	    }).then(result => {
-	    
+
 	    });
 
 	    // 修改借书状态，3:还书并审核
@@ -57,8 +57,8 @@ router.post('/addReviewBook', async (ctx, next) => {
 	    	{ status: 3 },
 	    	{ where:{
 	    	  user_id: _userId,
-			  book_id: _con.bookId,
-	        }}
+			    book_id: _con.bookId,
+	      }}
 	    )
 
         ctx.response.status = 200;
@@ -67,8 +67,8 @@ router.post('/addReviewBook', async (ctx, next) => {
 		  msg: '请求成功',
 		  data: {}
 	   }
-	
-	   
+
+
   	}
     // await ctx.render('index');
   } catch (err) {
@@ -99,16 +99,16 @@ router.post('/addReviewBook', async (ctx, next) => {
 		create_time: '评论时间'
       }]
 *  }
-* 
+*
 * @apiVersion 1.0.0
 */
 router.get('/reviewList', async (ctx) => {
 
   let _con = ctx.query;
   // let _con = ctx.request.body;
-  
+
   try {
-  	
+
   	await db.query('select a.id, a.book_id,a.user_id, a.content,a.create_time,a.update_time,b.name,b.url from review_books a,users b where a.book_id='+_con.bookId+' and a.user_id=b.id order by a.create_time desc')
   	  .spread(result => {
   		ctx.response.status = 200;

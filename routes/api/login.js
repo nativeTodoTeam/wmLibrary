@@ -28,7 +28,7 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 * @apiVersion 1.0.0
 */
 
-router.post('/login', async (ctx) => {
+router.get('/login', async (ctx) => {
   try {
     const data = ctx.request.body;
 

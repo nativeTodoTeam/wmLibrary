@@ -1,0 +1,25 @@
+.label-wrapper-style {
+  display: flex;
+  align-items: center;
+
+  .label-style {
+    margin-right: 20px;
+  }
+
+  .label-input-style {
+    width: 300px;
+    height: 28px;
+    padding: 0px 10px;
+  }
+
+  .label-textarea-style {
+    width: 300px;
+    height: 100px;
+    padding: 10px;
+  }
+
+  .select-style {
+    width: 320px;
+    height: 28px;
+  }
+}

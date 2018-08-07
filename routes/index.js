@@ -9,20 +9,21 @@ router.get('/', async (ctx, next) => {
   // await bookModel.selectData({
   //   title: '测试书籍'
   // })
-  await bookModel.updateData({
-    title: '测试书籍1'
-  }, {
-    where: {
-      id: 8
-    }
-  })
-  .then(r => {
-    console.log(r);
-  })
-  .catch(e => {
-    console.log(e);
-  })
-  await ctx.render('index');
+  // await bookModel.updateData({
+  //   title: '测试书籍1'
+  // }, {
+  //   where: {
+  //     id: 8
+  //   }
+  // })
+  // .then(r => {
+  //   console.log(r);
+  // })
+  // .catch(e => {
+  //   console.log(e);
+  // })
+  console.log('是来到了只饿了吗')
+  await ctx.render('login');
 });
 
  module.exports = router

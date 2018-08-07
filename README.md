@@ -4,6 +4,10 @@
 * supervisor
 * npm start
 
+## 页面
+* 编译 npm run build (不是实时打包编译)
+* 页面访问：http://localhost:3000/
+
 ## 接口文档
 * npm run apidoc
 * 项目启动后访问: http://localhost:3000/apidoc/index.html

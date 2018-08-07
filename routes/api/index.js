@@ -73,7 +73,7 @@ router.get('/test', async (ctx) => {
 * @apiVersion 1.0.0
 */
 
-router.post('/test_post', async (ctx) => {
+router.get('/test_post', async (ctx) => {
   console.log(ctx.request.body);
   try {
     const book = ctx.request.body;
