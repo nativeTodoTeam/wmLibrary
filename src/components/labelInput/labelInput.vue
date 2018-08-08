@@ -7,12 +7,12 @@
     <div class = 'label-style'>{{title}}</div>
     <textarea v-if = "type == 'textarea'"
       class = 'label-textarea-style'
-      v-model = 'message'
+      :value = 'value'
       @input = "setMessage">
     </textarea>
     <input v-if = "type == 'input'"
       class = 'label-input-style'
-      v-model = 'message'
+      :value = 'value'
       @input = "setMessage">
     </input>
     <select v-model="message"
@@ -47,7 +47,11 @@
       },
       'optionArr': {
         type: Array
+      },
+      'value': {
+        type: String
       }
+
     },
 
     methods: {

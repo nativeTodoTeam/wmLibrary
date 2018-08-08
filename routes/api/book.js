@@ -4,7 +4,7 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 
 
 /**
-* @api {post} /addbook 添加书籍
+* @api {post} /api/addbook 添加书籍
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} type 书籍分类
@@ -25,7 +25,7 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 * @apiVersion 1.0.0
 */
 
-router.post('/addbook', async (ctx, next) => {
+router.post('/api/addbook', async (ctx, next) => {
   // let _con = ctx.query;
   let _con = ctx.request.body;
   console.log(_con.type, 'con');
@@ -77,7 +77,7 @@ router.post('/addbook', async (ctx, next) => {
 });
 
 /**
-* @api {get} /bookList 所有书籍列表
+* @api {get} /api/bookList 所有书籍列表
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} type 书籍分类
@@ -113,7 +113,7 @@ router.post('/addbook', async (ctx, next) => {
 * @apiVersion 1.0.0
 */
 
-router.get('/bookList', async (ctx, next) => {
+router.get('/api/bookList', async (ctx, next) => {
   let _query = ctx.query;
   // let _query = ctx.request.body;
 

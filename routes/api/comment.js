@@ -4,7 +4,7 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 const db = require('../../config/db').sequelize;
 
 /**
-* @api {post} /addComment 添加评论
+* @api {post} /api/addComment 添加评论
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} reviewId  书评ID
@@ -19,15 +19,15 @@ const db = require('../../config/db').sequelize;
       code: 1,
       msg: '请求成功',
       data: {}
-* 
+*
 * @apiVersion 1.0.0
 */
-router.post('/addComment', async (ctx) => {
+router.post('/api/addComment', async (ctx) => {
 
   // let _con = ctx.query;
   let _con = ctx.request.body;
   let _userId = ctx.user.id;
-  
+
   try {
 
   	// 判断参数是否存在和是否为空
@@ -40,7 +40,7 @@ router.post('/addComment', async (ctx) => {
   	  parameterErr(ctx, {});
 
     } else {
-  
+
   	  await commentModel.Comment.create({
 
   	  	review_id: _con.reviewId,
@@ -55,7 +55,7 @@ router.post('/addComment', async (ctx) => {
 		  data: {}
 		}
   	  })
-    }  	
+    }
 
   } catch (err) {
   	resFailure(ctx, err);
@@ -65,7 +65,7 @@ router.post('/addComment', async (ctx) => {
 
 
 /**
-* @api {get} /commentList 评论列表
+* @api {get} /api/commentList 评论列表
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} reviewId  书评ID
@@ -88,14 +88,14 @@ router.post('/addComment', async (ctx) => {
        }
        ...
       ]
-* 
+*
 * @apiVersion 1.0.0
 */
-router.get('/commentList', async (ctx) => {
+router.get('/api/commentList', async (ctx) => {
 
   let _con = ctx.query;
   // let _con = ctx.request.body;
-  
+
   try {
 
   	await db.query('select a.id, a.review_id,a.user_id, a.content,a.create_time,a.update_time,b.name,b.url from comments a,users b where a.review_id='+_con.reviewId+' and a.user_id=b.id order by a.create_time desc')

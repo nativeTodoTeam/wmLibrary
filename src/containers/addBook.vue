@@ -4,6 +4,7 @@
      <LabelInput
         title = "书名"
         type = 'input'
+        :value = 'bookName'
         @setMessage = 'getBookName'>
      </LabelInput>
     </div>
@@ -11,6 +12,7 @@
      <LabelInput
        title = "作者"
        type = 'input'
+       :value = 'bookAuthor'
        @setMessage = 'getBookAuthor'>
      </LabelInput>
     </div>
@@ -26,6 +28,7 @@
      <LabelInput
        title = "简介"
        type = 'textarea'
+       :value = 'bookCon'
        @setMessage = 'getBookCon'>
      </LabelInput>
     </div>
@@ -43,7 +46,7 @@
     name: 'addBook',
     data () {
       return {
-        bookName: '',
+        bookName: '23',
         bookAuthor: '',
         bookCon: '',
         bookType: 0,
@@ -102,7 +105,7 @@
       // 添加书籍按钮
       addBook() {
         console.log('点击获取歇息', this.bookName, this.bookAuthor, this.bookCon)
-        let url = '/addbook';
+        let url = '/api/addbook';
         let data = {
           title: this.bookName,
           author: this.bookAuthor,
@@ -110,10 +113,14 @@
           type: this.bookType
         }
 
-        if (this.bookCon.length > 255) {
+        this.bookName = ' ';
+        this.bookAuthor = ' ';
+        this.bookCon = ' ';
+
+       if (this.bookCon.length > 255) {
           alert('简介不能超过255个字')
         } else {
-          this.$http.post(url, data).then((response) => {
+         this.$http.post(url, data).then((response) => {
             let _res = response.body;
             if (_res.code == 1) {
               alert('书籍添加成功');

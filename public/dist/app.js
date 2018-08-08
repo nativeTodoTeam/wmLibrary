@@ -11697,6 +11697,9 @@ process.umask = function() { return 0; };
 //
 //
 //
+//
+//
+//
 
 
 // 引用组件
@@ -11706,7 +11709,7 @@ process.umask = function() { return 0; };
   name: 'addBook',
   data () {
     return {
-      bookName: '',
+      bookName: '23',
       bookAuthor: '',
       bookCon: '',
       bookType: 0,
@@ -11765,7 +11768,7 @@ process.umask = function() { return 0; };
     // 添加书籍按钮
     addBook() {
       console.log('点击获取歇息', this.bookName, this.bookAuthor, this.bookCon)
-      let url = '/addbook';
+      let url = '/api/addbook';
       let data = {
         title: this.bookName,
         author: this.bookAuthor,
@@ -11773,10 +11776,14 @@ process.umask = function() { return 0; };
         type: this.bookType
       }
 
-      if (this.bookCon.length > 255) {
+      this.bookName = ' ';
+      this.bookAuthor = ' ';
+      this.bookCon = ' ';
+
+     if (this.bookCon.length > 255) {
         alert('简介不能超过255个字')
       } else {
-        this.$http.post(url, data).then((response) => {
+       this.$http.post(url, data).then((response) => {
           let _res = response.body;
           if (_res.code == 1) {
             alert('书籍添加成功');
@@ -11845,7 +11852,11 @@ process.umask = function() { return 0; };
     },
     'optionArr': {
       type: Array
+    },
+    'value': {
+      type: String
     }
+
   },
 
   methods: {
@@ -16471,53 +16482,17 @@ var render = function() {
     _vm._v(" "),
     _vm.type == "textarea"
       ? _c("textarea", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.message,
-              expression: "message"
-            }
-          ],
           staticClass: "label-textarea-style",
-          domProps: { value: _vm.message },
-          on: {
-            input: [
-              function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.message = $event.target.value
-              },
-              _vm.setMessage
-            ]
-          }
+          domProps: { value: _vm.value },
+          on: { input: _vm.setMessage }
         })
       : _vm._e(),
     _vm._v(" "),
     _vm.type == "input"
       ? _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.message,
-              expression: "message"
-            }
-          ],
           staticClass: "label-input-style",
-          domProps: { value: _vm.message },
-          on: {
-            input: [
-              function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.message = $event.target.value
-              },
-              _vm.setMessage
-            ]
-          }
+          domProps: { value: _vm.value },
+          on: { input: _vm.setMessage }
         })
       : _vm._e(),
     _vm._v(" "),
@@ -16588,7 +16563,7 @@ var render = function() {
       { staticClass: "add-input-style" },
       [
         _c("LabelInput", {
-          attrs: { title: "书名", type: "input" },
+          attrs: { title: "书名", type: "input", value: _vm.bookName },
           on: { setMessage: _vm.getBookName }
         })
       ],
@@ -16600,7 +16575,7 @@ var render = function() {
       { staticClass: "add-input-style" },
       [
         _c("LabelInput", {
-          attrs: { title: "作者", type: "input" },
+          attrs: { title: "作者", type: "input", value: _vm.bookAuthor },
           on: { setMessage: _vm.getBookAuthor }
         })
       ],
@@ -16624,7 +16599,7 @@ var render = function() {
       { staticClass: "add-input-style" },
       [
         _c("LabelInput", {
-          attrs: { title: "简介", type: "textarea" },
+          attrs: { title: "简介", type: "textarea", value: _vm.bookCon },
           on: { setMessage: _vm.getBookCon }
         })
       ],

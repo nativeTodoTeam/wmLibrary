@@ -6,7 +6,7 @@
 
 ## 页面
 * 编译 npm run build (不是实时打包编译)
-* 页面访问：http://localhost:3000/
+* 页面访问：http://localhost:3000/page/addBook
 
 ## 接口文档
 * npm run apidoc
