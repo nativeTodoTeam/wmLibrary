@@ -10,10 +10,9 @@ const mCenterView = async (ctx) => {
 }
 
 /**
-* @api {GET} /userInfo?userId=3 获取用户信息接口
+* @api {GET} /api/userInfo 获取用户信息接口
 * @apiGroup users
 * @apiDescription Author:汪小岗
-* @apiParam {Number} userId 用户id (必填)
 *
 * @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
 * @apiSuccess {string} msg 请求成功/失败
@@ -23,7 +22,6 @@ const mCenterView = async (ctx) => {
     code: 1,
     msg: '请求成功',
     data: {
-      "id": 3,
       "name": "xiaogang",
       "email": "xiaogang@frogshealth.com",
       "phone": "18191253790",
@@ -41,18 +39,18 @@ const mCenterView = async (ctx) => {
 */
 const getUserInfo = async (ctx) => {
   let data = ctx.request.query;
+  let userId = ctx.user.id;
 
   try {
 
-    if (!data.userId) {
+    if (!userId) {
       routerConfig.parameterErr(ctx, {});
       return;
     }
 
-    await usersModel.Users.findById(data.userId)
+    await usersModel.Users.findById(userId)
             .then((res) => {
               let data = {
-                "id": res.dataValues.id,
                 "name": res.dataValues.name,
                 "email": res.dataValues.email,
                 "phone": res.dataValues.phone,
@@ -74,10 +72,9 @@ const getUserInfo = async (ctx) => {
 }
 
 /**
-* @api {POST} /updateUserInfo 更新用户信息接口
+* @api {POST} /api/updateUserInfo 更新用户信息接口
 * @apiGroup users
 * @apiDescription Author:汪小岗
-* @apiParam {Number} userId 用户id (必填)
 * @apiParam {string} signature 签名 (选填至少一项)
 * @apiParam {string} position 职务 (选填至少一项)
 * @apiParam {Number} company_id 所属分公司 (选填至少一项)
@@ -95,10 +92,11 @@ const getUserInfo = async (ctx) => {
 */
 const updateUserInfo = async (ctx) => {
   let data = ctx.request.body;
+  let userId = ctx.user.id;
 
   try {
 
-    if (!data.userId) {
+    if (!userId) {
       routerConfig.parameterErr(ctx, {});
       return;
     }
@@ -137,7 +135,7 @@ const updateUserInfo = async (ctx) => {
 
     await usersModel.Users.update(_data, {
       where: {
-        id: data.userId,
+        id: userId,
       }
     })
       .then((res) => {
@@ -155,10 +153,9 @@ const updateUserInfo = async (ctx) => {
 
 
 /**
-* @api {POST} /userOut 用户退出登录接口
+* @api {POST} /api/userOut 用户退出登录接口
 * @apiGroup users
 * @apiDescription Author:汪小岗
-* @apiParam {Number} userId 用户id (必填)
 *
 * @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
 * @apiSuccess {string} msg 请求成功/失败
@@ -174,16 +171,17 @@ const updateUserInfo = async (ctx) => {
 const userOut = async (ctx) => {
   let data = ctx.request.body;
   let isUserId = false;
+  let userId = ctx.user.id;
 
   try {
 
-    if (!data.userId) {
+    if (!userId) {
       routerConfig.parameterErr(ctx, {});
       return;
     }
 
     // 查找该用户是否存在
-    await usersModel.Users.findById(data.userId)
+    await usersModel.Users.findById(userId)
       .then((res) => {
         if (res) {
           isUserId = true;
@@ -202,7 +200,7 @@ const userOut = async (ctx) => {
 
     await usersModel.Users.update({ token: null }, {
       where: {
-        id: data.userId
+        id: userId
       }
     })
       .then((res) => {
@@ -226,9 +224,9 @@ const userOut = async (ctx) => {
 
 }
 
-router.get('/mCenter', mCenterView);
-router.get('/userInfo', getUserInfo);
-router.post('/updateUserInfo', updateUserInfo);
-router.post('/userOut', userOut);
+router.get('/api/mCenter', mCenterView);
+router.get('/api/userInfo', getUserInfo);
+router.post('/api/updateUserInfo', updateUserInfo);
+router.post('/api/userOut', userOut);
 
 module.exports = router

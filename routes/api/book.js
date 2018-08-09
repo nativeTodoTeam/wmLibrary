@@ -148,7 +148,7 @@ router.get('/api/bookList', async (ctx, next) => {
 
 
 /**
-* @api {GET} /bookDetails?bookId=1 书详细信息接口
+* @api {GET} /api/bookDetails?bookId=1 书详细信息接口
 * @apiGroup Book
 * @apiDescription Author:汪小岗
 * @apiParam {Number} bookId 书籍id (必填)
@@ -203,6 +203,6 @@ const getBookDetails = async (ctx) => {
 
 }
 
-router.get('/bookDetails', getBookDetails);
+router.get('/api/bookDetails', getBookDetails);
 
 module.exports = router;

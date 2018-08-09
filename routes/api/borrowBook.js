@@ -255,7 +255,7 @@ router.post('/api/cancelBorrow', async (ctx) => {
 });
 
 /**
-* @api {GET} /userInfo?userId=3 用户借阅书籍信息接口
+* @api {GET} /api/userInfo?userId=3 用户借阅书籍信息接口
 * @apiGroup Book
 * @apiDescription Author:汪小岗
 * @apiParam {Number} userId 用户id (必填)
@@ -287,19 +287,18 @@ router.post('/api/cancelBorrow', async (ctx) => {
 * @apiVersion 1.0.0
 */
 const getUserBorrowBooks = async (ctx) => {
-  let data = ctx.request.query;
-
-  if (!data.userId) {
-    parameterErr(ctx, {});
-    return;
-  }
-
-  let sql = 'select a.type_id,a.title,a.author,a.url,a.content,a.create_time,'+
-    'a.update_time,a.status as bookStatus,b.book_id,b.status,b.start_time,' +
-    'b.end_time from books a,borrow_books b where b.user_id=' + data.userId +
-    ' and a.id=b.book_id order by a.create_time desc';
-
   try {
+    const userId = ctx.user.id;
+
+    if (!userId) {
+      parameterErr(ctx, {});
+      return;
+    }
+
+    let sql = 'select a.type_id,a.title,a.author,a.url,a.content,' +
+    'a.create_time,a.update_time,a.status as bookStatus,b.book_id,' +
+    'b.status,b.start_time,b.end_time from books a,borrow_books b where' +
+    ' b.user_id=' + userId + ' and a.id=b.book_id order by a.create_time desc';
 
     await db.query(sql)
       .spread(result => {
@@ -318,6 +317,6 @@ const getUserBorrowBooks = async (ctx) => {
 
 }
 
-router.get('/getUserBorrowBooks', getUserBorrowBooks);
+router.get('/api/getUserBorrowBooks', getUserBorrowBooks);
 
 module.exports = router;

@@ -12,7 +12,7 @@ const registerView = async (ctx, next) => {
 };
 
 /**
-* @api {post} /reg 用户注册接口
+* @api {post} /api/reg 用户注册接口
 * @apiGroup users
 * @apiDescription Author:汪小岗
 * @apiParam {string} name 真实姓名 (必填)
@@ -138,7 +138,7 @@ const setPasswordView = async (ctx) => {
 }
 
 /**
-* @api {post} /reg/setPassword 用户设置密码接口
+* @api {post} /api/reg/setPassword 用户设置密码接口
 * @apiGroup users
 * @apiDescription Author:汪小岗
 * @apiParam {string} password 密码 (必填)
@@ -200,9 +200,9 @@ const setPassword = async (ctx) => {
 
 }
 
-router.get('/reg', registerView)
-router.post('/reg', register);
-router.get('/reg/setPassword', setPasswordView);
-router.post('/reg/setPassword', setPassword);
+router.get('/api/reg', registerView)
+router.post('/api/reg', register);
+router.get('/api/reg/setPassword', setPasswordView);
+router.post('/api/reg/setPassword', setPassword);
 
 module.exports = router
