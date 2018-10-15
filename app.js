@@ -112,7 +112,8 @@ app.use(async (ctx, next) => {
     if (isPass) {
       await next();
     } else {
-      const token = ctx.header.authorization;  // 获取jwt
+      const token = ctx.header.authorization;  // 获取jwt, Bearer开头的
+      // 例子: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoyfSwiZXhwIjoxNTM5NTk4NTI4LCJpYXQiOjE1Mzk1OTQ5Mjh9.D8vXgDTDQNj7D6m9tH4dsq6xGjA7BCoecLT-qrCNrkc
 
       if (token) {
         let payload = await jsonwebtoken.verify(token.split(' ')[1], secret);
