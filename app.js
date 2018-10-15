@@ -25,6 +25,7 @@ const comment = require('./routes/api/comment');
 const login = require('./routes/api/login');
 const borrowBook = require('./routes/api/borrowBook');
 const user = require('./routes/api/user');
+const setCompany = require('./routes/api/setCompany');
 
 
 // error handler
@@ -56,8 +57,8 @@ const CONFIG = {
 app.use(session(CONFIG, app));
 
 // 记录不需要验证的路径
-const noVerify = [/^\/public/, /^\/css/, /^\/js/, /^\/img/, /^\/dist/, /^\/api^\/register/, /^\/api^\/login/, /^\/addbook/];
-const noVerifySession = [...noVerify, /^\/api^/];
+const noVerify = [/^\/public/, /^\/css/, /^\/js/, /^\/img/, /^\/dist/, /^\/api\/register/, /^\/api\/login/, /^\/addbook/, /^\/apidoc/];
+const noVerifySession = [...noVerify, /^\/api/];
 const noVerifyToken = [...noVerify, /^\/page/];
 
 app.use(async (ctx, next) => {
@@ -175,6 +176,7 @@ app.use(comment.routes());
 app.use(login.routes(), login.allowedMethods());
 app.use(borrowBook.routes(), borrowBook.allowedMethods());
 app.use(user.routes());
+app.use(setCompany.routes());
 
 // error-handling
 app.on('error', (err, ctx) => {
