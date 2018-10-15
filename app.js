@@ -26,6 +26,7 @@ const login = require('./routes/api/login');
 const borrowBook = require('./routes/api/borrowBook');
 const user = require('./routes/api/user');
 const setCompany = require('./routes/api/setCompany');
+const bookType = require('./routes/api/bookType');
 
 
 // error handler
@@ -40,7 +41,7 @@ app.use(bodyparser({
 }));
 
 app.keys = ['some secret hurr'];
- 
+
 const CONFIG = {
   key: 'koa:sess', /** (string) cookie key (default is koa:sess) */
   /** (number || 'session') maxAge in ms (default is 1 days) */
@@ -62,7 +63,7 @@ const noVerifySession = [...noVerify, /^\/api/];
 const noVerifyToken = [...noVerify, /^\/page/];
 
 app.use(async (ctx, next) => {
-  
+
   let isPass = false;
   for(let i = 0; i < noVerifySession.length; i++) {
     if (ctx.url.match(noVerifySession[i])) {
@@ -178,6 +179,7 @@ app.use(login.routes(), login.allowedMethods());
 app.use(borrowBook.routes(), borrowBook.allowedMethods());
 app.use(user.routes());
 app.use(setCompany.routes());
+app.use(bookType.routes());
 
 // error-handling
 app.on('error', (err, ctx) => {
