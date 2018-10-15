@@ -1,7 +1,6 @@
 # wmLibrary
 蛙鸣图书馆
 ## 启动
-* supervisor
 * npm start
 
 ## 页面
