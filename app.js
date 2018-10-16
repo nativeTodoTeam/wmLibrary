@@ -22,10 +22,10 @@ const register = require('./routes/api/register');
 const books = require('./routes/api/book');
 const review = require('./routes/api/review');
 const comment = require('./routes/api/comment');
-const login = require('./routes/api/login');
+const login = require('./routes/api/user/login');
 const borrowBook = require('./routes/api/borrowBook');
 const user = require('./routes/api/user');
-const setCompany = require('./routes/api/setCompany');
+const setCompany = require('./routes/api/admin/setCompany');
 const bookType = require('./routes/api/bookType');
 
 
@@ -58,9 +58,9 @@ const CONFIG = {
 app.use(session(CONFIG, app));
 
 // 记录不需要验证的路径
-const noVerify = [/^\/public/, /^\/css/, /^\/js/, /^\/img/, /^\/dist/, /^\/api\/register/, /^\/api\/login/, /^\/addbook/, /^\/apidoc/];
-const noVerifySession = [...noVerify, /^\/api/];
-const noVerifyToken = [...noVerify, /^\/page/];
+const noVerify = [/^\/public/, /^\/css/, /^\/js/, /^\/img/, /^\/dist/, /^\/api\/register/, /^\/api\/user\/login/, /^\/addbook/, /^\/apidoc/];
+const noVerifySession = [...noVerify, /^\/api/]; // 访问接口不需要验证session
+const noVerifyToken = [...noVerify, /^\/page/]; // 访问后台页面不需要验证token
 
 app.use(async (ctx, next) => {
 

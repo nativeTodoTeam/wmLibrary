@@ -1,11 +1,12 @@
 const router = require('koa-router')();
-const userModel = require('../../models/user');
+const userModel = require('../../../models/user');
 const crypto = require('crypto');
 const jsonwebtoken = require('jsonwebtoken');
-const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
+const {
+  resSuccess, resFailure, parameterErr} = require('../../../public/js/route');
 
 /**
-* @api {post} /api/login 用户登录接口
+* @api {post} /api/user/login 用户登录接口
 * @apiDescription 登录接口 - 史沐卉
 * @apiGroup users
 * @apiParam {email} string 邮箱
@@ -23,11 +24,11 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
         name: 'shimuhui'
       }
 *  }
-* @apiSampleRequest http://localhost:3000/api/login
+* @apiSampleRequest http://localhost:3000/api/user/login
 * @apiVersion 1.0.0
 */
 
-router.post('/api/login', async (ctx) => {
+router.post('/api/user/login', async (ctx) => {
   try {
     const data = ctx.request.body;
 
