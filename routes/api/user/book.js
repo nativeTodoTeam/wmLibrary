@@ -1,10 +1,10 @@
 const router = require('koa-router')();
-const bookModel = require('../../models/books');
-const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
+const bookModel = require('../../../models/books');
+const {resSuccess, resFailure, parameterErr} = require('../../../public/js/route');
 
 
 /**
-* @api {post} /api/addbook 添加书籍
+* @api {post} /api/user/addbook 添加书籍
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} type 书籍分类
@@ -25,10 +25,10 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 * @apiVersion 1.0.0
 */
 
-router.post('/api/addbook', async (ctx, next) => {
+router.post('/api/user/addbook', async (ctx, next) => {
   // let _con = ctx.query;
   let _con = ctx.request.body;
-  console.log(_con.type, 'con');
+
   try {
 
   	// 判断这些都不能为空
@@ -77,7 +77,7 @@ router.post('/api/addbook', async (ctx, next) => {
 });
 
 /**
-* @api {get} /api/bookList 所有书籍列表
+* @api {get} /api/user/bookList 所有书籍列表
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} type 书籍分类
@@ -93,27 +93,27 @@ router.post('/api/addbook', async (ctx, next) => {
       msg: '请求成功',
       data: [
       	{
-		  type_id: '书籍分类',
-		  title: '书籍名称',
-		  author: '书籍作者',
-		  content: '书籍简介',
-		  url: '书籍封面',
-		  status: '书籍状态 0: 上架 1: 下架'
+    		  type_id: '书籍分类',
+    		  title: '书籍名称',
+    		  author: '书籍作者',
+    		  content: '书籍简介',
+    		  url: '书籍封面',
+    		  status: '书籍状态 0: 上架 1: 下架'
         },
         ...
       ],
       pageTurn: {
-		pageSize: 2,
-		pageNo: 1,
-		firstPage: 1,
-		nextPage: 2
+    		pageSize: 2,
+    		pageNo: 1,
+    		firstPage: 1,
+    		nextPage: 2
       }
 *  }
 *
 * @apiVersion 1.0.0
 */
 
-router.get('/api/bookList', async (ctx, next) => {
+router.get('/api/user/bookList', async (ctx, next) => {
   let _query = ctx.query;
   // let _query = ctx.request.body;
 

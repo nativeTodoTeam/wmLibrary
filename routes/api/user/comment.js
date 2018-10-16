@@ -1,10 +1,10 @@
 const router = require('koa-router')();
-const commentModel = require('../../models/comments');
-const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
-const db = require('../../config/db').sequelize;
+const commentModel = require('../../../models/comments');
+const {resSuccess, resFailure, parameterErr} = require('../../../public/js/route');
+const db = require('../../../config/db').sequelize;
 
 /**
-* @api {post} /api/addComment 添加评论
+* @api {post} /api/user/addComment 添加评论
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} reviewId  书评ID
@@ -22,7 +22,7 @@ const db = require('../../config/db').sequelize;
 *
 * @apiVersion 1.0.0
 */
-router.post('/api/addComment', async (ctx) => {
+router.post('/api/user/addComment', async (ctx) => {
 
   // let _con = ctx.query;
   let _con = ctx.request.body;
@@ -65,7 +65,7 @@ router.post('/api/addComment', async (ctx) => {
 
 
 /**
-* @api {get} /api/commentList 评论列表
+* @api {get} /api/user/commentList 评论列表
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} reviewId  书评ID
@@ -91,7 +91,7 @@ router.post('/api/addComment', async (ctx) => {
 *
 * @apiVersion 1.0.0
 */
-router.get('/api/commentList', async (ctx) => {
+router.get('/api/user/commentList', async (ctx) => {
 
   let _con = ctx.query;
   // let _con = ctx.request.body;

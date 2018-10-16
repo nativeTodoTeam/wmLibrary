@@ -11709,7 +11709,7 @@ process.umask = function() { return 0; };
   name: 'addBook',
   data () {
     return {
-      bookName: '23',
+      bookName: '',
       bookAuthor: '',
       bookCon: '',
       bookType: 0,

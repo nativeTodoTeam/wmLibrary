@@ -38,7 +38,7 @@
     "moment": "^2.22.2",
     "mysql2": "^1.5.3",
     "node-uuid": "^1.4.8",
-    "sequelize": "^4.38.0",
+    "sequelize": "^4.39.0",
     "vue": "^2.5.2",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.1"
