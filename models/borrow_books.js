@@ -10,6 +10,18 @@ const Borrow = db.defineModel('borrow_books', {
     type: Sequelize.INTEGER(11),
     allowNull: true
   },
+  book_id: {
+    type: Sequelize.INTEGER(11),
+    allowNull: true
+  },
+  user_name: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  book_name: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
   status: {
     type: Sequelize.INTEGER,
     allowNull: true
@@ -40,6 +52,17 @@ const selectData = async (obj, order) => {
   return JSON.parse(JSON.stringify(callback));
 };
 
+const selectPageData = async (obj, order, limit, offset) => {
+  let callback = await Borrow.findAndCountAll({
+    where: obj,
+    order: order ? order : [],
+    limit: limit ? limit : 25,
+    offset: offset ? offset : 0,
+  });
+  console.log(`find ${callback.length} books: success`);
+  return JSON.parse(JSON.stringify(callback));
+};
+
 const updateData = async (values, options) => {
   let callback = await Borrow.update(values, {
     where: options
@@ -65,5 +88,6 @@ module.exports={
   insertData,
   selectData,
   updateData,
+  selectPageData
   // deleteData
 };

@@ -9,11 +9,12 @@ const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 const {
   getSixStartTime,
   getMonthStartDay,
-  getMonthEndDay
+  getMonthEndDay,
+  getNextStartTime
 } = require('../../utils/date');
 
 /**
-* @api {get} /api/getBorrowBookList 获取借阅情况接口
+* @api {get} /api/user/getBorrowBookList 获取借阅情况接口
 * @apiDescription 获取借阅情况接口 - 史沐卉
 * @apiGroup Book
 * @apiParam {int} id 书id
@@ -37,11 +38,11 @@ const {
         }
     ]
 *  }
-* @apiSampleRequest http://localhost:3000/api/getBorrowBookList?id=1
+* @apiSampleRequest http://localhost:3000/api/user/getBorrowBookList?id=1
 * @apiVersion 1.0.0
 */
 
-router.get('/api/getBorrowBookList', async (ctx) => {
+router.get('/api/user/getBorrowBookList', async (ctx) => {
   try {
     const data = ctx.request.query;
 
@@ -112,7 +113,203 @@ router.get('/api/getBorrowBookList', async (ctx) => {
 });
 
 /**
-* @api {post} /api/borrowBook 借书/预约接口
+* @api {get} /api/admin/getBorrowBookList 后台获取借阅情况接口
+* @apiDescription 后台获取借阅情况接口 - 史沐卉
+* @apiGroup Book
+* @apiParam {string} book_name 书名 默认全部
+* @apiParam {string} borrow_name 借阅人 默认全部
+* @apiParam {int} borrow_state 借阅状态 默认全部
+* @apiParam {string} borrow_date 借阅时间 格式: 2018-01-01 默认全部
+* @apiParam {int} page_no 页码 默认1
+* @apiParam {int} page_size 每页显示条数 默认25
+* @apiSuccess {int} code 成功: 0, 失败: 1
+* * @apiSuccess {string} msg 请求成功/失败
+* * @apiSuccess {json} data 返回内容: status: 0 借阅中, 1 已预约, 2 取消预约, 3 已还书, 4 超时未还, 5 提醒还书
+* @apiSuccessExample {json} Success-Response:
+*  {
+      code: 1,
+      msg: '请求成功',
+      data: [
+        {
+            "id": 6,
+            "user_id": 1,
+            "book_id": 1,
+            "user_name": "xiaotong",
+            "book_name": "无印良品",
+            "status": 3,
+            "start_time": "2018-07-31T16:00:00.000Z",
+            "end_time": "2018-07-29T16:00:00.000Z",
+            "create_time": "2018-07-25T16:00:00.000Z",
+            "update_time": "2018-07-25T16:00:00.000Z"
+        }
+    ]
+*  }
+* @apiSampleRequest http://localhost:3000/api/admin/getBorrowBookList?id=1
+* @apiVersion 1.0.0
+*/
+
+router.get('/api/admin/getBorrowBookList', async (ctx) => {
+  try {
+    const data = ctx.request.query;
+    let obj = {};
+    let page_no = 1;
+    let page_size = 25;
+
+    if (data.page_no && parseInt(data.page_no)) {
+      page_no = parseInt(data.page_no);
+    }
+
+    if (data.page_size && parseInt(data.page_size)) {
+      page_size = parseInt(data.page_size);
+    }
+
+    // 根据书名筛选
+    if (data.book_name) {
+      obj.book_name = {
+        $like: '%' + data.book_name + '%',
+      };
+    }
+
+    // 根据书名筛选
+    if (data.user_name) {
+      obj.user_name = {
+        $like: '%' + data.user_name + '%',
+      };
+    }
+
+    let date = new Date();
+    let startTime;
+    let endTime;
+
+    // 根据状态筛选
+    switch (parseInt(data.borrow_state)) {
+      case 0:
+        startTime = getMonthStartDay(date);
+        endTime = getNextStartTime(date);
+        obj.status = 0;
+        obj.start_time = {
+          [Op.lt]: endTime,
+          [Op.gte]: startTime
+        };
+        break;
+      case 1:
+        startTime = getNextStartTime(date);
+        endTime = getSixStartTime(date);
+        obj.status = 0;
+        obj.start_time = {
+          [Op.lte]: endTime,
+          [Op.gte]: startTime
+        };
+        break;
+      case 2:
+        startTime = getNextStartTime(date);
+        endTime = getSixStartTime(date);
+        obj.status = 2;
+        obj.start_time = {
+          [Op.lte]: endTime,
+          [Op.gte]: startTime
+        };
+        break;
+      case 3:
+        startTime = getMonthStartDay(date);
+        endTime = getNextStartTime(date);
+        obj.status = 1;
+        obj.start_time = {
+          [Op.lt]: endTime,
+          [Op.gte]: startTime
+        };
+        break;
+      case 4:
+        startTime = getMonthStartDay(date);
+        endTime = getNextStartTime(date);
+        obj.status = 0;
+        obj.start_time = {
+          [Op.lt]: startTime
+        };
+        break;
+      case 5:
+        // 同case=0的条件, 提醒由前台展示判断即可, 因为借阅中和提醒还书只能出现一个
+        startTime = getMonthStartDay(date);
+        endTime = getNextStartTime(date);
+        obj.status = 0;
+        obj.start_time = {
+          [Op.lt]: endTime,
+          [Op.gte]: startTime
+        };
+        break;
+      default:
+        break;
+    }
+
+    // 根据时间筛选
+    if (data.borrow_date) {
+      let selectDate = new Date(data.borrow_date);
+      obj.start_time = {
+        [Op.lt]: getNextStartTime(selectDate),
+        [Op.gte]: getMonthStartDay(selectDate)
+      };
+    }
+
+    let selectResult = await borrowModel.selectPageData(obj, [
+      ['start_time', 'DESC']
+    ], page_size, (page_no - 1) * page_size);
+
+    // 循环处理借阅列表状态值, status: 0 借阅中, 1 已预约, 2 取消预约, 3 已还书, 4 超时未还, 5 提醒还书
+    if (selectResult) {
+      let returnObj = selectResult;
+      returnObj.page_size = page_size;
+      returnObj.page_no = page_no;
+
+      for (let i = 0; i < returnObj.rows.length; i++) {
+        switch (returnObj.rows[i].status) {
+          case 0:
+            if (new Date(returnObj.rows[i].start_time) -
+              getMonthStartDay(date) == 0) {
+              if (getMonthEndDay(date).getDay() == date.getDay()) {
+                returnObj.rows[i].status = 5;
+              } else {
+                returnObj.rows[i].status = 0;
+              }
+            } else if (new Date(returnObj.rows[i].start_time) -
+              getMonthStartDay(date) < 0) {
+              returnObj.rows[i].status = 4;
+            } else {
+              returnObj.rows[i].status = 1;
+            }
+            break;
+          case 1:
+            returnObj.rows[i].status = 3;
+            break;
+          case 2:
+            returnObj.rows[i].status = 2;
+            break;
+          default:
+            break;
+        }
+        if (returnObj.rows[i].status == 0) {
+          if (new Date(returnObj.rows[i].start_time) -
+            getMonthStartDay(date) == 0) {
+            returnObj.rows[i].status = 0;
+          } else if (new Date(returnObj.rows[i].start_time) -
+            getMonthStartDay(date) < 0) {
+            returnObj.rows[i].status = 4;
+          } else {
+            returnObj.rows[i].status = 1;
+          }
+        }
+      }
+
+      resSuccess(ctx, returnObj);
+    } else {
+      resFailure(ctx, '查询失败');
+    }
+  } catch (err) {
+    resFailure(ctx, err);
+  }
+});
+
+/**
+* @api {post} /api/user/borrowBook 借书/预约接口
 * @apiDescription 借书/预约接口 - 史沐卉
 * @apiGroup Book
 * @apiParam {int} book_id 书id
@@ -126,11 +323,11 @@ router.get('/api/getBorrowBookList', async (ctx) => {
       msg: '请求成功',
       data: ''
 *  }
-* @apiSampleRequest http://localhost:3000/api/borrowBook
+* @apiSampleRequest http://localhost:3000/api/user/borrowBook
 * @apiVersion 1.0.0
 */
 
-router.post('/api/borrowBook', async (ctx) => {
+router.post('/api/user/borrowBook', async (ctx) => {
   try {
     const data = ctx.request.body;
     const userId = ctx.user.id;
@@ -181,9 +378,19 @@ router.post('/api/borrowBook', async (ctx) => {
     if (selectResult.length > 0) {
       resFailure(ctx, '当前时间不可预约');
     } else {
+      let selectBook = await booksModel.selectData({
+        id: data.book_id
+      });
+
+      let selectUser = await usersModel.selectData({
+        id: userId
+      });
+
       let borrowResult = await borrowModel.insertData({
         book_id: data.book_id,
+        book_name: selectBook.title,
         user_id: userId,
+        user_name: selectUser.name,
         start_time: startDate,
         end_time: endDate,
         status: 0
@@ -201,7 +408,7 @@ router.post('/api/borrowBook', async (ctx) => {
 });
 
 /**
-* @api {post} /api/cancelBorrow 取消预约接口
+* @api {post} /api/user/cancelBorrow 取消预约接口
 * @apiDescription 取消预约接口 - 史沐卉
 * @apiGroup Book
 * @apiParam {int} borrow_id 预约id
@@ -214,11 +421,11 @@ router.post('/api/borrowBook', async (ctx) => {
       msg: '请求成功',
       data: ''
 *  }
-* @apiSampleRequest http://localhost:3000/api/cancelBorrow
+* @apiSampleRequest http://localhost:3000/api/user/cancelBorrow
 * @apiVersion 1.0.0
 */
 
-router.post('/api/cancelBorrow', async (ctx) => {
+router.post('/api/user/cancelBorrow', async (ctx) => {
   try {
     const data = ctx.request.body;
     const userId = ctx.user.id;
