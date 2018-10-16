@@ -19,14 +19,15 @@ const index = require('./routes/page/index');
 
 // 接口
 const register = require('./routes/api/register');
-const books = require('./routes/api/book');
-const review = require('./routes/api/review');
-const comment = require('./routes/api/comment');
+const books = require('./routes/api/user/book');
+const review = require('./routes/api/user/review');
+const comment = require('./routes/api/user/comment');
 const login = require('./routes/api/user/login');
 const borrowBook = require('./routes/api/borrowBook');
 const user = require('./routes/api/user');
 const setCompany = require('./routes/api/admin/setCompany');
 const bookType = require('./routes/api/bookType');
+const personnel = require('./routes/api/admin/personnelManage');
 
 
 // error handler
@@ -180,6 +181,7 @@ app.use(borrowBook.routes(), borrowBook.allowedMethods());
 app.use(user.routes());
 app.use(setCompany.routes());
 app.use(bookType.routes());
+app.use(personnel.routes());
 
 // error-handling
 app.on('error', (err, ctx) => {

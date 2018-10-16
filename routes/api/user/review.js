@@ -1,12 +1,12 @@
 const router = require('koa-router')();
-const reviewModel = require('../../models/review_books');
-const userModel = require('../../models/user');
-const borrowModel = require('../../models/borrow_books');
-const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
-const db = require('../../config/db').sequelize;
+const reviewModel = require('../../../models/review_books');
+const userModel = require('../../../models/user');
+const borrowModel = require('../../../models/borrow_books');
+const {resSuccess, resFailure, parameterErr} = require('../../../public/js/route');
+const db = require('../../../config/db').sequelize;
 
 /**
-* @api {post} /api/addReviewBook 添加书心得
+* @api {post} /api/user/addReviewBook 添加书心得
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} userId  用户ID
@@ -26,7 +26,7 @@ const db = require('../../config/db').sequelize;
 * @apiVersion 1.0.0
 */
 
-router.post('/api/addReviewBook', async (ctx, next) => {
+router.post('/api/user/addReviewBook', async (ctx, next) => {
   let _con = ctx.query;
   let _userId = ctx.user.id;
   // let _con = ctx.request.body;
@@ -78,7 +78,7 @@ router.post('/api/addReviewBook', async (ctx, next) => {
 
 
 /**
-* @api {get} /api/reviewList 查询书评
+* @api {get} /api/user/reviewList 查询书评
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} bookId  书籍ID
@@ -102,7 +102,7 @@ router.post('/api/addReviewBook', async (ctx, next) => {
 *
 * @apiVersion 1.0.0
 */
-router.get('/api/reviewList', async (ctx) => {
+router.get('/api/user/reviewList', async (ctx) => {
 
   let _con = ctx.query;
   // let _con = ctx.request.body;
