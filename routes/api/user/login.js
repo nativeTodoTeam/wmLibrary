@@ -19,7 +19,6 @@ const {
       code: 1,
       msg: '请求成功',
       data: {
-        id: 2,
         token: '085a3a43-7a4d-4dfc-b8d6-b56f07a8c4d1',
         name: 'shimuhui'
       }

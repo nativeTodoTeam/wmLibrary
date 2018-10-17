@@ -28,6 +28,7 @@ const user = require('./routes/api/user');
 const setCompany = require('./routes/api/admin/setCompany');
 const bookType = require('./routes/api/bookType');
 const personnel = require('./routes/api/admin/personnelManage');
+const adminLogin = require('./routes/api/admin/login');
 
 
 // error handler
@@ -59,7 +60,7 @@ const CONFIG = {
 app.use(session(CONFIG, app));
 
 // 记录不需要验证的路径
-const noVerify = [/^\/public/, /^\/css/, /^\/js/, /^\/img/, /^\/dist/, /^\/api\/register/, /^\/api\/user\/login/, /^\/addbook/, /^\/apidoc/];
+const noVerify = [/^\/public/, /^\/css/, /^\/js/, /^\/img/, /^\/dist/, /^\/api\/register/, /^\/api\/user\/login/, /^\/api\/admin\/login/, /^\/addbook/, /^\/apidoc/];
 const noVerifySession = [...noVerify, /^\/api/]; // 访问接口不需要验证session
 const noVerifyToken = [...noVerify, /^\/page/]; // 访问后台页面不需要验证token
 
@@ -182,6 +183,7 @@ app.use(user.routes());
 app.use(setCompany.routes());
 app.use(bookType.routes());
 app.use(personnel.routes());
+app.use(adminLogin.routes(), adminLogin.allowedMethods());
 
 // error-handling
 app.on('error', (err, ctx) => {
