@@ -107,7 +107,7 @@ router.post('/api/admin/updateSetCompany', async (ctx) => {
 
 
 /**
-* @api {get} /api/admin/getCompany 获取分公司列表接口
+* @api {get} /api/getCompany 获取分公司列表接口
 * @apiDescription 获取分公司列表接口 - 史沐卉
 * @apiGroup company
 * @apiSuccess {int} code 成功: 0, 失败: 1
@@ -124,11 +124,11 @@ router.post('/api/admin/updateSetCompany', async (ctx) => {
         "update_time": "2018-10-15T08:08:36.000Z"
       }]
 *  }
-* @apiSampleRequest http://localhost:3000/api/admin/getCompany
+* @apiSampleRequest http://localhost:3000/api/getCompany
 * @apiVersion 1.0.0
 */
 
-router.get('/api/admin/getCompany', async (ctx) => {
+router.get('/api/getCompany', async (ctx) => {
   try {
 
     let selectResult = await companyModel.selectData({});

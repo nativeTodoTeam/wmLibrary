@@ -26,6 +26,10 @@ const Book = db.defineModel('books', {
     type: Sequelize.STRING,
     allowNull: true
   },
+  background: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
   create_time: {
     type: Sequelize.TIMESTAMP,
     allowNull: true
