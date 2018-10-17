@@ -1,5 +1,8 @@
 const router = require('koa-router')();
 const bookModel = require('../../models/books');
+const bookTypesModel = require('../../models/book_types');
+const borrowBookModel = require('../../models/borrow_books');
+const db = require('../../config/db').sequelize;
 const {resSuccess, resFailure, parameterErr} = require('../../public/js/route');
 
 
@@ -77,7 +80,7 @@ router.post('/api/addbook', async (ctx, next) => {
 });
 
 /**
-* @api {get} /api/bookList 所有书籍列表
+* @api {get} /api/bookList 所有书籍列表(V1.0.0)
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} type 书籍分类
@@ -116,12 +119,16 @@ router.post('/api/addbook', async (ctx, next) => {
 router.get('/api/bookList', async (ctx, next) => {
   let _query = ctx.query;
   // let _query = ctx.request.body;
-
+  // where: {
+  //   type_id: parseInt(_query.type),
+  // },
   try {
   	await bookModel.Book.findAll({
-  	  where: {
-  	  	type_id: parseInt(_query.type),
-  	  },
+
+      include: [{
+        model: bookTypesModel.BookType,
+        where: { id: db.col('books.type_id') }
+      }],
   	  limit: parseInt(_query.pageSize),
   	  offset: (parseInt(_query.pageNo) - 1) * parseInt(_query.pageSize)
 
@@ -148,20 +155,20 @@ router.get('/api/bookList', async (ctx, next) => {
 
 
 /**
-* @api {GET} /api/bookDetails?bookId=1 书详细信息接口
+* @api {GET} /api/bookDetails?bookId=1 书详细信息接口(V1.0.0)
 * @apiGroup Book
 * @apiDescription Author:汪小岗
 * @apiParam {Number} bookId 书籍id (必填)
 *
 * @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
 * @apiSuccess {string} msg 请求成功/失败
-* @apiSuccess {string} data 返回数据 00: 书籍不存在
+* @apiSuccess {string} data 返回数据
 * @apiSuccessExample {json} Success-Response:
 * {
     code: 1,
     msg: '请求成功',
     data: {
-      "id": 4,
+      "bookId": 4,
       "type_id": 1,
       "title": "JavaScript设计模式",
       "author": "Addy Osmani",
@@ -169,7 +176,8 @@ router.get('/api/bookList', async (ctx, next) => {
       "content": "设计模式的样式",
       "create_time": "2018-07-23T22:29:45.000Z",
       "update_time": "2018-07-23T22:29:45.000Z",
-      "status": null
+      "bookStatus": null,
+      "bookTypeName": "艺术设计",
     }
 * }
 * @apiVersion 1.0.0
@@ -184,17 +192,21 @@ const getBookDetails = async (ctx) => {
 
   try {
 
-    await bookModel.Book.findById(data.bookId)
-            .then((res) => {
-              if (res && res.dataValues) {
-                resSuccess(ctx, res.dataValues)
-              } else {
-                resSuccess(ctx, '00')
-              }
-            })
-            .catch((err) => {
-              resFailure(ctx, err);
-            })
+    let sql = 'select a.id as bookId,a.type_id,a.title,a.author,a.url,' +
+    'a.content,a.create_time,a.update_time,a.status as bookStatus,' +
+    'b.name as bookTypeName from books a,book_types b where' +
+    ' a.id=' + data.bookId + ' and a.type_id=b.id';
+
+    await db.query(sql)
+      .spread(result => {
+        console.log('result==========>',result)
+        ctx.response.status = 200;
+        ctx.response.body = {
+          code: 1,
+          msg: '请求成功',
+          data: result
+        };
+      })
 
   } catch (err) {
     resFailure(ctx, err);
@@ -203,6 +215,115 @@ const getBookDetails = async (ctx) => {
 
 }
 
+
+/**
+* @api {POST} /api/bookDetails 更新书籍接口(v1.0.0)
+* @apiGroup Book
+* @apiDescription Author:汪小岗
+* @apiParam {Number} bookId 书籍id (必填)
+* @apiParam {Number} typeId 书籍分类 (选填)
+* @apiParam {String} title 书籍名称 (选填)
+* @apiParam {String} author 书籍作者 (选填)
+* @apiParam {String} content 书籍简介 (选填)
+* @apiParam {String} url 书籍封面 (选填)
+*
+* @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
+* @apiSuccess {string} msg 请求成功/失败
+* @apiSuccessExample {json} Success-Response:
+* {
+    code: 1,
+    msg: '请求成功',
+* }
+* @apiVersion 1.0.0
+*/
+const updateBookDetails = async (ctx) => {
+  let data = ctx.request.body;
+
+  if (!data.bookId) { parameterErr(ctx, {}); return; };
+
+  try {
+
+    let res = await bookModel.updateData({
+      type_id: data.typeId ? data.typeId : '',
+      title: data.title ? data.title : '',
+      author: data.author ? data.author : '',
+      url: data.url ? data.url : '',
+      content: data.content ? data.content : '',
+    }, {
+      id: data.bookId,
+    });
+
+    if (res == 0 || res == 1) {
+      resSuccess(ctx, '更新成功')
+    } else {
+      resFailure(ctx, err);
+    }
+
+  } catch (err) {
+    resFailure(ctx, err);
+  }
+
+}
+
+
+/**
+* @api {POST} /api/offlineBook 书籍下架接口(v1.0.0)
+* @apiGroup Book
+* @apiDescription Author:汪小岗
+* @apiParam {Number} bookId 书籍id (必填)
+*
+* @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
+* @apiSuccess {string} msg 请求成功/失败
+* @apiSuccessExample {json} Success-Response:
+* {
+    code: 1,
+    msg: '下架成功',
+* }
+* @apiVersion 1.0.0
+*/
+const offlineBook = async (ctx) => {
+  let data = ctx.request.body;
+
+  if (!data.bookId) { parameterErr(ctx, {}); return; };
+
+  try {
+
+    let isBorrowBook = await borrowBookModel.selectData({
+      book_id: data.bookId,
+    });
+
+    if (isBorrowBook.length > 0) {
+      console.log('下架', isBorrowBook)
+      ctx.response.status = 200;
+      ctx.response.body = {
+        code: 0,
+        msg: '该书已有用户借阅！！！',
+      };
+
+      return;
+    }
+
+
+    let res = await bookModel.updateData({
+      status: 1,
+    }, {
+      id: data.bookId,
+    });
+
+    if (res == 0 || res == 1) {
+      resSuccess(ctx, '下架成功')
+    } else {
+      resFailure(ctx, err);
+    }
+
+  } catch (err) {
+    resFailure(ctx, err);
+  }
+
+}
+
 router.get('/api/bookDetails', getBookDetails);
+router.post('/api/bookDetails', updateBookDetails);
+router.post('/api/offlineBook', offlineBook);
 
 module.exports = router;

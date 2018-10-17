@@ -26,7 +26,7 @@ const login = require('./routes/api/user/login');
 const borrowBook = require('./routes/api/borrowBook');
 const user = require('./routes/api/user');
 const setCompany = require('./routes/api/admin/setCompany');
-const bookType = require('./routes/api/bookType');
+const bookType = require('./routes/api/admin/bookType');
 
 
 // error handler
@@ -62,79 +62,79 @@ const noVerify = [/^\/public/, /^\/css/, /^\/js/, /^\/img/, /^\/dist/, /^\/api\/
 const noVerifySession = [...noVerify, /^\/api/]; // 访问接口不需要验证session
 const noVerifyToken = [...noVerify, /^\/page/]; // 访问后台页面不需要验证token
 
-app.use(async (ctx, next) => {
-
-  let isPass = false;
-  for(let i = 0; i < noVerifySession.length; i++) {
-    if (ctx.url.match(noVerifySession[i])) {
-      isPass = true;
-      break;
-    }
-  }
-
-  if (isPass) {
-    await next();
-  } else {
-    console.log('没有后台, 暂时不处理了');
-    await next();
-  }
-});
+// app.use(async (ctx, next) => {
+//
+//   let isPass = false;
+//   for(let i = 0; i < noVerifySession.length; i++) {
+//     if (ctx.url.match(noVerifySession[i])) {
+//       isPass = true;
+//       break;
+//     }
+//   }
+//
+//   if (isPass) {
+//     await next();
+//   } else {
+//     console.log('没有后台, 暂时不处理了');
+//     await next();
+//   }
+// });
 
 //Custom 401 handling if you don't want to expose koa-jwt errors to users
-app.use((ctx, next) => {
-  return next().catch((err) => {
-    if (401 == err.status) {
-      resTokenErr(ctx, 'token失效');
-    } else {
-      throw err;
-    }
-  });
-});
+// app.use((ctx, next) => {
+//   return next().catch((err) => {
+//     if (401 == err.status) {
+//       resTokenErr(ctx, 'token失效');
+//     } else {
+//       throw err;
+//     }
+//   });
+// });
 
 /* jwt密钥 */
 const secret = 'shared-secret';
 
-//jwt token验证
-app.use(
-  jwt({ secret: secret }).unless({ path: noVerifyToken })
-);
-
-app.use(async (ctx, next) => {
-  try {
-
-    let isPass = false;
-    for(let i = 0; i < noVerifyToken.length; i++) {
-      if (ctx.url.match(noVerifyToken[i])) {
-        isPass = true;
-        break;
-      }
-    }
-
-    if (isPass) {
-      await next();
-    } else {
-      const token = ctx.header.authorization;  // 获取jwt, Bearer开头的
-      // 例子: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoyfSwiZXhwIjoxNTM5NTk4NTI4LCJpYXQiOjE1Mzk1OTQ5Mjh9.D8vXgDTDQNj7D6m9tH4dsq6xGjA7BCoecLT-qrCNrkc
-
-      if (token) {
-        let payload = await jsonwebtoken.verify(token.split(' ')[1], secret);
-        // 解密，获取payload存入ctx
-        if (payload && payload.data && payload.data.id) {
-          ctx.user = {
-            id: payload.data.id
-          };
-          await next();
-        } else {
-          resTokenErr(ctx, 'token失效2');
-        }
-      } else {
-        resTokenErr(ctx, 'token失效3');
-      }
-    }
-  } catch(err) {
-    resTokenErr(ctx, 'token失效4');
-  }
-});
+// //jwt token验证
+// app.use(
+//   jwt({ secret: secret }).unless({ path: noVerifyToken })
+// );
+//
+// app.use(async (ctx, next) => {
+//   try {
+//
+//     let isPass = false;
+//     for(let i = 0; i < noVerifyToken.length; i++) {
+//       if (ctx.url.match(noVerifyToken[i])) {
+//         isPass = true;
+//         break;
+//       }
+//     }
+//
+//     if (isPass) {
+//       await next();
+//     } else {
+//       const token = ctx.header.authorization;  // 获取jwt, Bearer开头的
+//       // 例子: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoyfSwiZXhwIjoxNTM5NTk4NTI4LCJpYXQiOjE1Mzk1OTQ5Mjh9.D8vXgDTDQNj7D6m9tH4dsq6xGjA7BCoecLT-qrCNrkc
+//
+//       if (token) {
+//         let payload = await jsonwebtoken.verify(token.split(' ')[1], secret);
+//         // 解密，获取payload存入ctx
+//         if (payload && payload.data && payload.data.id) {
+//           ctx.user = {
+//             id: payload.data.id
+//           };
+//           await next();
+//         } else {
+//           resTokenErr(ctx, 'token失效2');
+//         }
+//       } else {
+//         resTokenErr(ctx, 'token失效3');
+//       }
+//     }
+//   } catch(err) {
+//     resTokenErr(ctx, 'token失效4');
+//   }
+// });
 
 app.use(json());
 
