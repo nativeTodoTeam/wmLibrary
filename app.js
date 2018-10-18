@@ -19,16 +19,17 @@ const index = require('./routes/page/index');
 
 // 接口
 const register = require('./routes/api/register');
-const books = require('./routes/api/user/book');
+const books = require('./routes/api/admin/book');
 const review = require('./routes/api/user/review');
 const comment = require('./routes/api/user/comment');
 const login = require('./routes/api/user/login');
 const borrowBook = require('./routes/api/borrowBook');
 const user = require('./routes/api/user');
 const setCompany = require('./routes/api/admin/setCompany');
-const bookType = require('./routes/api/bookType');
+const bookType = require('./routes/api/admin/bookType');
 const personnel = require('./routes/api/admin/personnelManage');
-
+const adminLogin = require('./routes/api/admin/login');
+const upload = require('./routes/api/upload');
 
 // error handler
 onerror(app);
@@ -59,83 +60,83 @@ const CONFIG = {
 app.use(session(CONFIG, app));
 
 // 记录不需要验证的路径
-const noVerify = [/^\/public/, /^\/css/, /^\/js/, /^\/img/, /^\/dist/, /^\/api\/register/, /^\/api\/user\/login/, /^\/addbook/, /^\/apidoc/];
+const noVerify = [/^\/public/, /^\/css/, /^\/js/, /^\/img/, /^\/dist/, /^\/api\/register/, /^\/api\/user\/login/, /^\/api\/admin\/login/, /^\/addbook/, /^\/apidoc/];
 const noVerifySession = [...noVerify, /^\/api/]; // 访问接口不需要验证session
 const noVerifyToken = [...noVerify, /^\/page/]; // 访问后台页面不需要验证token
 
-app.use(async (ctx, next) => {
-
-  let isPass = false;
-  for(let i = 0; i < noVerifySession.length; i++) {
-    if (ctx.url.match(noVerifySession[i])) {
-      isPass = true;
-      break;
-    }
-  }
-
-  if (isPass) {
-    await next();
-  } else {
-    console.log('没有后台, 暂时不处理了');
-    await next();
-  }
-});
+// app.use(async (ctx, next) => {
+//
+//   let isPass = false;
+//   for(let i = 0; i < noVerifySession.length; i++) {
+//     if (ctx.url.match(noVerifySession[i])) {
+//       isPass = true;
+//       break;
+//     }
+//   }
+//
+//   if (isPass) {
+//     await next();
+//   } else {
+//     console.log('没有后台, 暂时不处理了');
+//     await next();
+//   }
+// });
 
 //Custom 401 handling if you don't want to expose koa-jwt errors to users
-app.use((ctx, next) => {
-  return next().catch((err) => {
-    if (401 == err.status) {
-      resTokenErr(ctx, 'token失效');
-    } else {
-      throw err;
-    }
-  });
-});
+// app.use((ctx, next) => {
+//   return next().catch((err) => {
+//     if (401 == err.status) {
+//       resTokenErr(ctx, 'token失效');
+//     } else {
+//       throw err;
+//     }
+//   });
+// });
 
 /* jwt密钥 */
 const secret = 'shared-secret';
 
-//jwt token验证
-app.use(
-  jwt({ secret: secret }).unless({ path: noVerifyToken })
-);
-
-app.use(async (ctx, next) => {
-  try {
-
-    let isPass = false;
-    for(let i = 0; i < noVerifyToken.length; i++) {
-      if (ctx.url.match(noVerifyToken[i])) {
-        isPass = true;
-        break;
-      }
-    }
-
-    if (isPass) {
-      await next();
-    } else {
-      const token = ctx.header.authorization;  // 获取jwt, Bearer开头的
-      // 例子: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoyfSwiZXhwIjoxNTM5NTk4NTI4LCJpYXQiOjE1Mzk1OTQ5Mjh9.D8vXgDTDQNj7D6m9tH4dsq6xGjA7BCoecLT-qrCNrkc
-
-      if (token) {
-        let payload = await jsonwebtoken.verify(token.split(' ')[1], secret);
-        // 解密，获取payload存入ctx
-        if (payload && payload.data && payload.data.id) {
-          ctx.user = {
-            id: payload.data.id
-          };
-          await next();
-        } else {
-          resTokenErr(ctx, 'token失效2');
-        }
-      } else {
-        resTokenErr(ctx, 'token失效3');
-      }
-    }
-  } catch(err) {
-    resTokenErr(ctx, 'token失效4');
-  }
-});
+// //jwt token验证
+// app.use(
+//   jwt({ secret: secret }).unless({ path: noVerifyToken })
+// );
+//
+// app.use(async (ctx, next) => {
+//   try {
+//
+//     let isPass = false;
+//     for(let i = 0; i < noVerifyToken.length; i++) {
+//       if (ctx.url.match(noVerifyToken[i])) {
+//         isPass = true;
+//         break;
+//       }
+//     }
+//
+//     if (isPass) {
+//       await next();
+//     } else {
+//       const token = ctx.header.authorization;  // 获取jwt, Bearer开头的
+//       // 例子: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoyfSwiZXhwIjoxNTM5NTk4NTI4LCJpYXQiOjE1Mzk1OTQ5Mjh9.D8vXgDTDQNj7D6m9tH4dsq6xGjA7BCoecLT-qrCNrkc
+//
+//       if (token) {
+//         let payload = await jsonwebtoken.verify(token.split(' ')[1], secret);
+//         // 解密，获取payload存入ctx
+//         if (payload && payload.data && payload.data.id) {
+//           ctx.user = {
+//             id: payload.data.id
+//           };
+//           await next();
+//         } else {
+//           resTokenErr(ctx, 'token失效2');
+//         }
+//       } else {
+//         resTokenErr(ctx, 'token失效3');
+//       }
+//     }
+//   } catch(err) {
+//     resTokenErr(ctx, 'token失效4');
+//   }
+// });
 
 app.use(json());
 
@@ -182,6 +183,8 @@ app.use(user.routes());
 app.use(setCompany.routes());
 app.use(bookType.routes());
 app.use(personnel.routes());
+app.use(adminLogin.routes(), adminLogin.allowedMethods());
+app.use(upload.routes());
 
 // error-handling
 app.on('error', (err, ctx) => {

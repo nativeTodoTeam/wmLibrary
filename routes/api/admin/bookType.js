@@ -1,7 +1,7 @@
 const Router = require('koa-router');
-const bookTypeModel = require('../../models/book_types');
-const Utils = require('../../utils/index');
-const routerConfig = require('../../public/js/route');
+const bookTypeModel = require('../../../models/book_types');
+const Utils = require('../../../utils/index');
+const routerConfig = require('../../../public/js/route');
 
 var router = new Router();
 

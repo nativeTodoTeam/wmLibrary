@@ -35,9 +35,24 @@ const getMonthEndDay = (date) => {
   return new Date(_endDay);
 };
 
+// 获取下个月的开始时间, 返回格式Date()
+const getNextStartTime = (date) => {
+  let startYear = date.getFullYear();
+  let startMonth = date.getMonth();
+  let endTime = new Date();
+
+  if (startMonth > 11) {
+    endTime = new Date(startYear + 1, 1, 1, 0, 0, 0);
+  } else {
+    endTime = new Date(startYear, startMonth + 1, 1, 0, 0, 0);
+  }
+  return endTime;
+};
+
 module.exports={
   getSixStartTime,
   getMonthCount,
   getMonthStartDay,
-  getMonthEndDay
+  getMonthEndDay,
+  getNextStartTime
 };

@@ -9,9 +9,7 @@ const Company = db.defineModel('company_types', {
   content: {
     type: Sequelize.STRING(11),
     allowNull: true
-  },
-  create_time: { type: Sequelize.TIMESTAMP, allowNull: true },
-  update_time: { type: Sequelize.TIMESTAMP, allowNull: true }
+  }
 });
 
 

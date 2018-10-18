@@ -1,15 +1,14 @@
 const router = require('koa-router')();
-const userModel = require('../../../models/user');
-const crypto = require('crypto');
+const adminUserModel = require('../../../models/admin_user');
 const jsonwebtoken = require('jsonwebtoken');
 const {
   resSuccess, resFailure, parameterErr} = require('../../../public/js/route');
 
 /**
-* @api {post} /api/user/login 用户登录接口
-* @apiDescription 登录接口 - 史沐卉
+* @api {post} /api/admin/login 后台用户登录接口
+* @apiDescription 后台用户登录接口 - 史沐卉
 * @apiGroup users
-* @apiParam {email} string 邮箱
+* @apiParam {name} string 用户名
 * @apiParam {password} sting 密码
 * @apiSuccess {int} code 成功: 0, 失败: 1
 * * @apiSuccess {string} msg 请求成功/失败
@@ -23,16 +22,16 @@ const {
         name: 'shimuhui'
       }
 *  }
-* @apiSampleRequest http://localhost:3000/api/user/login
+* @apiSampleRequest http://localhost:3000/api/admin/login
 * @apiVersion 1.0.0
 */
 
-router.post('/api/user/login', async (ctx) => {
+router.post('/api/admin/login', async (ctx) => {
   try {
     const data = ctx.request.body;
 
-    if (!data.email || data.email == '') {
-      parameterErr(ctx, 'email参数不能为空');
+    if (!data.name || data.name == '') {
+      parameterErr(ctx, 'name参数不能为空');
       return;
     }
     if (!data.password || data.password == '') {
@@ -40,20 +39,13 @@ router.post('/api/user/login', async (ctx) => {
       return;
     }
 
-    let selectResult = await userModel.selectData({
-      email: data.email
+    let selectResult = await adminUserModel.selectData({
+      name: data.name
     });
 
-    if (selectResult.length == 1 && selectResult[0].reg_status == 1) {
+    if (selectResult.length == 1) {
 
-      // 创建 md5 算法加密
-      let md5 = crypto.createHash('md5');
-      // hex十六进制
-      md5.update(data.password);
-      let md5Password = md5.digest('hex');
-
-      if (md5Password && md5Password == selectResult[0].password) {
-        // let token = uuid.v4();
+      if (data.password == selectResult[0].password) {
         // 获取token
         let token = jsonwebtoken.sign({
           data: {id: selectResult[0].id},
@@ -61,20 +53,10 @@ router.post('/api/user/login', async (ctx) => {
           exp: Math.floor(Date.now() / 1000) + (60 * 60),
         }, 'shared-secret');
 
-        let loginResult = await userModel.updateData({
-          token: token
-        }, {
-          id: selectResult[0].id
+        resSuccess(ctx, {
+          token: token,
+          name: selectResult[0].name,
         });
-
-        if (loginResult == 1) {
-          resSuccess(ctx, {
-            token: token,
-            name: selectResult[0].name,
-          });
-        } else {
-          resFailure(ctx, '登录失败');
-        }
       } else {
         resFailure(ctx, '密码错误');
       }
