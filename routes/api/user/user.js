@@ -1,16 +1,12 @@
 const Router = require('koa-router');
-const usersModel = require('../../models/user');
-const Utils = require('../../utils/index');
-const routerConfig = require('../../public/js/route');
+const usersModel = require('../../../models/user');
+const Utils = require('../../../utils/index');
+const routerConfig = require('../../../public/js/route');
 
 var router = new Router();
 
-const mCenterView = async (ctx) => {
-  await ctx.render('mCenter');
-}
-
 /**
-* @api {GET} /api/userInfo 获取用户信息接口
+* @api {GET} /api/user/userInfo 获取用户信息接口(V1.0.0)
 * @apiGroup users
 * @apiDescription Author:汪小岗
 *
@@ -72,12 +68,12 @@ const getUserInfo = async (ctx) => {
 }
 
 /**
-* @api {POST} /api/updateUserInfo 更新用户信息接口
+* @api {POST} /api/user/updateUserInfo 更新用户信息接口(V1.0.0)
 * @apiGroup users
 * @apiDescription Author:汪小岗
-* @apiParam {string} signature 签名 (选填至少一项)
-* @apiParam {string} position 职务 (选填至少一项)
-* @apiParam {Number} company_id 所属分公司 (选填至少一项)
+* @apiParam {string} [signature] 签名 (选填至少一项)
+* @apiParam {string} [position] 职务 (选填至少一项)
+* @apiParam {Number} [company_id] 所属分公司 (选填至少一项)
 *
 * @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
 * @apiSuccess {string} msg 请求成功/失败
@@ -153,7 +149,7 @@ const updateUserInfo = async (ctx) => {
 
 
 /**
-* @api {POST} /api/userOut 用户退出登录接口
+* @api {POST} /api/user/userOut 用户退出登录接口(V1.0.0)
 * @apiGroup users
 * @apiDescription Author:汪小岗
 *
@@ -224,9 +220,8 @@ const userOut = async (ctx) => {
 
 }
 
-router.get('/api/mCenter', mCenterView);
-router.get('/api/userInfo', getUserInfo);
-router.post('/api/updateUserInfo', updateUserInfo);
-router.post('/api/userOut', userOut);
+router.get('/api/user/userInfo', getUserInfo);
+router.post('/api/user/updateUserInfo', updateUserInfo);
+router.post('/api/user/userOut', userOut);
 
 module.exports = router

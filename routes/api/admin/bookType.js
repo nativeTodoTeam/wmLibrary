@@ -17,7 +17,7 @@ var router = new Router();
 * {
     code: 1,
     msg: '请求成功',
-    list: []
+    data: []
 * }
 * @apiVersion 1.0.0
 */
@@ -36,7 +36,7 @@ const getBookTypeInfo = async (ctx) => {
     ctx.response.body = {
       code: 1,
       msg: '请求成功',
-      list: bookTypeRes
+      data: bookTypeRes
     }
 
   } catch (err) {
@@ -45,9 +45,9 @@ const getBookTypeInfo = async (ctx) => {
 }
 
 /**
-* @api {POST} /api/bookType 更新书籍分类信息接口(V1.0.0)
+* @api {POST} /api/admin/bookType 编辑书籍分类信息接口(V1.0.0)
 * @apiGroup bookType
-* @apiParam {int} id 书籍分类id
+* @apiParam {Number} id 书籍分类id
 * @apiParam {string} name 书籍分类名称
 * @apiDescription Author:汪小岗
 *
@@ -108,7 +108,7 @@ const updateBookTypeInfo = async (ctx) => {
 
 
 /**
-* @api {POST} /api/addBookType 添加书籍分类接口(V1.0.0)
+* @api {POST} /api/admin/addBookType 添加书籍分类接口(V1.0.0)
 * @apiGroup bookType
 * @apiParam {string} name 书籍分类名称
 * @apiDescription Author:汪小岗
@@ -169,8 +169,8 @@ const addBookType = async (ctx) => {
 
 
 router.get('/api/bookType', getBookTypeInfo);
-router.post('/api/bookType', updateBookTypeInfo);
-router.post('/api/addBookType', addBookType);
+router.post('/api/admin/bookType', updateBookTypeInfo);
+router.post('/api/admin/addBookType', addBookType);
 
 
 module.exports = router

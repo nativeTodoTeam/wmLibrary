@@ -10,14 +10,14 @@ const {resSuccess, resFailure, parameterErr} = require('../../../public/js/route
 * @api {post} /api/admin/addbook 添加书籍(V1.0.0)
 * @apiDescription 赵晓彤
 * @apiGroup Book
-* @apiParam {int} type 书籍分类
+* @apiParam {Number} type 书籍分类
 * @apiParam {string} title 书籍名称
 * @apiParam {string} author 书籍作者
 * @apiParam {string} content 书籍简介
 * @apiParam {string} url 书籍封面
 * @apiParam {string} background 书籍背景
-* @apiSuccess {int} code 成功: 0, 失败: 1
-* @apiSuccess {string} msg 请求成功/失败
+* @apiSuccess {Number} code 成功: 0, 失败: 1
+* @apiSuccess {string} msg 添加成功/失败
 * @apiSuccess {json} data 返回内容
 * @apiSuccessExample {json} Success-Response:
 *  {
@@ -86,12 +86,12 @@ router.post('/api/admin/addbook', async (ctx, next) => {
 * @api {get} /api/bookList 书籍列表(V1.0.0)
 * @apiDescription author:汪小岗
 * @apiGroup Book
-* @apiParam {int} [type_id] 书籍分类
-* @apiParam {int} [bookStatus]  书籍状态
-* @apiParam {int} [pageSize] 分页大小。默认200
-* @apiParam {int} [pageNo] 页码。默认第一页
+* @apiParam {Number} [type_id] 书籍分类
+* @apiParam {Number} [bookStatus]  书籍状态
+* @apiParam {Number} [pageSize] 分页大小。默认200
+* @apiParam {Number} [pageNo] 页码。默认第一页
 *
-* @apiSuccess {int} code 成功: 0, 失败: 1
+* @apiSuccess {Number} code 成功: 0, 失败: 1
 * @apiSuccess {string} msg 请求成功/失败
 * @apiSuccess {json} data 返回内容
 * @apiSuccessExample {json} Success-Response:
@@ -231,7 +231,7 @@ const getBookDetails = async (ctx) => {
 
 
 /**
-* @api {POST} /api/admin/bookDetails 更新书籍接口(v1.0.0)
+* @api {POST} /api/admin/bookDetails 更新书籍接口(V1.0.0)
 * @apiGroup Book
 * @apiDescription Author:汪小岗
 * @apiParam {Number} bookId 书籍id
@@ -242,11 +242,11 @@ const getBookDetails = async (ctx) => {
 * @apiParam {String} [url] 书籍封面
 *
 * @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
-* @apiSuccess {string} msg 请求成功/失败
+* @apiSuccess {string} msg 更新成功/失败
 * @apiSuccessExample {json} Success-Response:
 * {
     code: 1,
-    msg: '请求成功',
+    msg: '更新成功',
 * }
 * @apiVersion 1.0.0
 */
@@ -282,13 +282,13 @@ const updateBookDetails = async (ctx) => {
 
 
 /**
-* @api {POST} /api/admin/offlineBook 书籍下架接口(v1.0.0)
+* @api {POST} /api/admin/offlineBook 书籍下架接口(V1.0.0)
 * @apiGroup Book
 * @apiDescription Author:汪小岗
 * @apiParam {Number} bookId 书籍id
 *
 * @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
-* @apiSuccess {string} msg 请求成功/失败
+* @apiSuccess {string} msg 下架成功/失败
 * @apiSuccessExample {json} Success-Response:
 * {
     code: 1,
