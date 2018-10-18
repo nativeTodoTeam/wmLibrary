@@ -105,7 +105,7 @@ router.post('/api/admin/addPersonnel', async(ctx, next) => {
     }).then((res) => {
 
       if (res.length == 0) {
-        console.log(res, '怎么看出来的是否注册了123åå');
+    
         _isEmail = 0;
       } else {
         _isEmail = 1;
