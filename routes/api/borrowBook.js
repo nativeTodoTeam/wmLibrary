@@ -16,7 +16,7 @@ const {
 /**
 * @api {get} /api/user/getBorrowBookList 获取借阅情况接口
 * @apiDescription 获取借阅情况接口 - 史沐卉
-* @apiGroup Book
+* @apiGroup BorrowBook
 * @apiParam {int} id 书id
 * @apiSuccess {int} code 成功: 0, 失败: 1
 * * @apiSuccess {string} msg 请求成功/失败
@@ -115,7 +115,7 @@ router.get('/api/user/getBorrowBookList', async (ctx) => {
 /**
 * @api {get} /api/admin/getBorrowBookList 后台获取借阅情况接口
 * @apiDescription 后台获取借阅情况接口 - 史沐卉
-* @apiGroup Book
+* @apiGroup BorrowBook
 * @apiParam {string} book_name 书名 默认全部
 * @apiParam {string} borrow_name 借阅人 默认全部
 * @apiParam {int} borrow_state 借阅状态 默认全部
@@ -311,7 +311,7 @@ router.get('/api/admin/getBorrowBookList', async (ctx) => {
 /**
 * @api {post} /api/user/borrowBook 借书/预约接口
 * @apiDescription 借书/预约接口 - 史沐卉
-* @apiGroup Book
+* @apiGroup BorrowBook
 * @apiParam {int} book_id 书id
 * @apiParam {string} borrow_time 借阅/预约时间 格式: 2018-10
 * @apiSuccess {int} code 成功: 0, 失败: 1
@@ -410,7 +410,7 @@ router.post('/api/user/borrowBook', async (ctx) => {
 /**
 * @api {post} /api/user/cancelBorrow 取消预约接口
 * @apiDescription 取消预约接口 - 史沐卉
-* @apiGroup Book
+* @apiGroup BorrowBook
 * @apiParam {int} borrow_id 预约id
 * @apiSuccess {int} code 成功: 0, 失败: 1
 * * @apiSuccess {string} msg 请求成功/失败
@@ -463,7 +463,7 @@ router.post('/api/user/cancelBorrow', async (ctx) => {
 
 /**
 * @api {GET} /api/userInfo?userId=3 用户借阅书籍信息接口
-* @apiGroup Book
+* @apiGroup BorrowBook
 * @apiDescription Author:汪小岗
 * @apiParam {Number} userId 用户id (必填)
 *
