@@ -18,13 +18,13 @@ const session = require('koa-session');
 const index = require('./routes/page/index');
 
 // 接口
-const register = require('./routes/api/register');
+const register = require('./routes/api/user/register');
 const books = require('./routes/api/admin/book');
 const review = require('./routes/api/user/review');
 const comment = require('./routes/api/user/comment');
 const login = require('./routes/api/user/login');
 const borrowBook = require('./routes/api/borrowBook');
-const user = require('./routes/api/user');
+const user = require('./routes/api/user/user');
 const setCompany = require('./routes/api/admin/setCompany');
 const bookType = require('./routes/api/admin/bookType');
 const personnel = require('./routes/api/admin/personnelManage');

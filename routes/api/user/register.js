@@ -1,25 +1,21 @@
 const Router = require('koa-router');
-const usersModel = require('../../models/user');
+const usersModel = require('../../../models/user');
 const crypto = require('crypto');
-const Utils = require('../../utils/index');
+const Utils = require('../../../utils/index');
 
-const routerConfig = require('../../public/js/route');
+const routerConfig = require('../../../public/js/route');
 
 var router = new Router();
 
-const registerView = async (ctx, next) => {
-  await ctx.render('reg');
-};
-
 /**
-* @api {post} /api/reg 用户注册接口
+* @api {post} /api/user/reg 用户注册接口(V1.0.0)
 * @apiGroup users
 * @apiDescription Author:汪小岗
-* @apiParam {string} name 真实姓名 (必填)
-* @apiParam {string} phone 手机号 (必填)
-* @apiParam {string} email 邮箱 (必填)
-* @apiParam {string} position 职务 (必填)
-* @apiParam {Number} company_id 所属分公司 (必填)
+* @apiParam {string} name 真实姓名
+* @apiParam {string} phone 手机号
+* @apiParam {string} email 邮箱
+* @apiParam {string} position 职务
+* @apiParam {Number} company_id 所属分公司
 *
 * @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
 * @apiSuccess {string} msg 请求成功/失败
@@ -132,17 +128,12 @@ const register = async (ctx, next) => {
 
 };
 
-
-const setPasswordView = async (ctx) => {
-  await ctx.render('setPassword')
-}
-
 /**
-* @api {post} /api/reg/setPassword 用户设置密码接口
+* @api {post} /api/user/reg/setPassword 用户设置密码接口
 * @apiGroup users
 * @apiDescription Author:汪小岗
-* @apiParam {string} password 密码 (必填)
-* @apiParam {string} confirmPassword 确认密码 (必填)
+* @apiParam {string} password 密码
+* @apiParam {string} confirmPassword 确认密码
 *
 * @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
 * @apiSuccess {string} msg 请求成功/失败
@@ -200,9 +191,7 @@ const setPassword = async (ctx) => {
 
 }
 
-router.get('/api/reg', registerView)
-router.post('/api/reg', register);
-router.get('/api/reg/setPassword', setPasswordView);
-router.post('/api/reg/setPassword', setPassword);
+router.post('/api/user/reg', register);
+router.post('/api/user/reg/setPassword', setPassword);
 
 module.exports = router
