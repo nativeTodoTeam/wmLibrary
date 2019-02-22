@@ -55,10 +55,10 @@ router.post('/api/admin/addbook', async (ctx, next) => {
       return;
     }
 
-    if (!_con.background || _con.background == '') {
-      parameterErr(ctx, {});
-      return;
-    }
+    // if (!_con.background || _con.background == '') {
+    //   parameterErr(ctx, {});
+    //   return;
+    // }
 
     await bookModel.Book.create({
       type_id: _con.type,
@@ -130,13 +130,24 @@ router.get('/api/bookList', async (ctx, next) => {
 
     // 关联查询书籍分类、条件查询（书籍分类、书籍状态）
     if (_query) {
+      // sql = 'select a.id as bookId,a.type_id,a.title,a.author,a.url,' +
+      // 'a.content,a.background,a.create_time,a.update_time,a.status as ' +
+      // 'bookStatus, b.name as bookTypeName from books a,book_types b ' +
+      // (_query.type_id || _query.bookStatus ? 'where ' : '') +
+      // (_query.type_id ? `type_id=${_query.type_id} and ` : '') +
+      // (_query.bookStatus ? `a.status=${_query.bookStatus}` : '') +
+      // ' and a.type_id=b.id ' +
+      // `limit ${ (_query.pageNo ? _query.pageNo - 1 : 0) *
+      //           (_query.pageSize ? _query.pageSize : 200)
+      //         }, ${_query.pageSize ? _query.pageSize : 200}`;
+
       sql = 'select a.id as bookId,a.type_id,a.title,a.author,a.url,' +
       'a.content,a.background,a.create_time,a.update_time,a.status as ' +
       'bookStatus, b.name as bookTypeName from books a,book_types b ' +
       (_query.type_id || _query.bookStatus ? 'where ' : '') +
       (_query.type_id ? `type_id=${_query.type_id} and ` : '') +
       (_query.bookStatus ? `a.status=${_query.bookStatus}` : '') +
-      ' and a.type_id=b.id ' +
+      ' and a.type_id=b.id order by a.update_time desc ' +
       `limit ${ (_query.pageNo ? _query.pageNo - 1 : 0) *
                 (_query.pageSize ? _query.pageSize : 200)
               }, ${_query.pageSize ? _query.pageSize : 200}`;
