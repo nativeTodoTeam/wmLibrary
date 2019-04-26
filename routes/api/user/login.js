@@ -3,15 +3,17 @@ const userModel = require('../../../models/user');
 const crypto = require('crypto');
 const jsonwebtoken = require('jsonwebtoken');
 const {
-  resSuccess, resFailure, parameterErr} = require('../../../public/js/route');
+  resSuccess,
+  resFailure,
+  parameterErr
+} = require('../../../public/js/route');
 
 /**
-* @api {post} /api/user/login 用户登录接口
-* @apiDescription 登录接口 - 史沐卉
+* @api {post} /api/user/emailCheck 验证用户邮箱是否注册接口
+* @apiDescription 登录相关接口 - 史沐卉
 * @apiGroup users
 * @apiParam {email} string 邮箱
-* @apiParam {password} sting 密码
-* @apiSuccess {int} code 成功: 0, 失败: 1
+* @apiSuccess {int} code 成功: 1, 失败: 0
 * * @apiSuccess {string} msg 请求成功/失败
 * * @apiSuccess {json} data 返回内容
 * @apiSuccessExample {json} Success-Response:
@@ -27,7 +29,52 @@ const {
 * @apiVersion 1.0.0
 */
 
-router.post('/api/user/login', async (ctx) => {
+router.post('/api/user/emailCheck', async (ctx) => {
+  try {
+    const data = ctx.request.body;
+
+    if (!data.email || data.email == '') {
+      parameterErr(ctx, 'email参数不能为空');
+      return;
+    }
+
+    let selectResult = await userModel.selectData({
+      email: data.email
+    });
+
+    if (selectResult.length == 1 && selectResult[0].reg_status == 1) {
+      resSuccess(ctx, '邮箱已经注册');
+    } else {
+      resFailure(ctx, '用户未注册');
+    }
+  } catch (err) {
+    resFailure(ctx, err);
+  }
+});
+
+/**
+* @api {post} /api/user/login 用户登录接口
+* @apiDescription 登录接口 - 史沐卉
+* @apiGroup users
+* @apiParam {email} string 邮箱
+* @apiParam {password} sting 密码
+* @apiSuccess {int} code 成功: 1, 失败: 0
+* * @apiSuccess {string} msg 请求成功/失败
+* * @apiSuccess {json} data 返回内容
+* @apiSuccessExample {json} Success-Response:
+*  {
+      code: 1,
+      msg: '请求成功',
+      data: {
+        token: '085a3a43-7a4d-4dfc-b8d6-b56f07a8c4d1',
+        name: 'shimuhui'
+      }
+*  }
+* @apiSampleRequest http://localhost:3000/api/user/login
+* @apiVersion 1.0.0
+*/
+
+router.post('/api/user/login', async(ctx) => {
   try {
     const data = ctx.request.body;
 
@@ -56,7 +103,7 @@ router.post('/api/user/login', async (ctx) => {
         // let token = uuid.v4();
         // 获取token
         let token = jsonwebtoken.sign({
-          data: {id: selectResult[0].id},
+          data: { id: selectResult[0].id },
           // 设置 token 过期时间 60 seconds * 60 minutes = 1 hour
           exp: Math.floor(Date.now() / 1000) + (60 * 60),
         }, 'shared-secret');

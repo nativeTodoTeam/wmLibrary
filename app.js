@@ -60,7 +60,7 @@ const CONFIG = {
 app.use(session(CONFIG, app));
 
 // 记录不需要验证的路径
-const noVerify = [/^\/public/, /^\/css/, /^\/js/, /^\/img/, /^\/dist/, /^\/api\/register/, /^\/api\/user\/login/, /^\/api\/admin\/login/, /^\/addbook/, /^\/apidoc/];
+const noVerify = [/^\/public/, /^\/css/, /^\/js/, /^\/img/, /^\/dist/, /^\/api\/register/, /^\/api\/user\/login/,/^\/api\/user\/emailCheck/,/^\/api\/user\/reg/, /^\/api\/admin\/login/, /^\/addbook/, /^\/apidoc/];
 const noVerifySession = [...noVerify, /^\/api/]; // 访问接口不需要验证session
 const noVerifyToken = [...noVerify, /^\/page/]; // 访问后台页面不需要验证token
 

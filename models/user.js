@@ -12,11 +12,17 @@ const Users = db.defineModel('users', {
   company_id: { type: Sequelize.INTEGER, allowNull: true },
   token: { type: Sequelize.STRING, allowNull: true },
   status: { type: Sequelize.INTEGER, allowNull: true },
-  create_time: { type: Sequelize.TIMESTAMP, allowNull: true },
-  update_time: { type: Sequelize.TIMESTAMP, allowNull: true },
+  create_time: { type: Sequelize.DATE, allowNull: true },
+  update_time: { type: Sequelize.DATE, allowNull: true },
   position: { type: Sequelize.STRING, allowNull: true },
   reg_status: { type: Sequelize.INTEGER, allowNull: true },
 })
+
+const insertData = async (obj) => {
+  let callback = await Users.create(obj);
+  console.log('created: success');
+  return JSON.parse(JSON.stringify(callback));
+};
 
 const selectData = async (obj) => {
   let callback = await Users.findAll({
@@ -39,6 +45,7 @@ const updateData = async (values, options) => {
 
 module.exports = {
   Users,
+  insertData,
   selectData,
   updateData
 };
