@@ -1,9 +1,10 @@
 const router = require('koa-router')();
 const bookModel = require('../../../models/books');
 const bookTypesModel = require('../../../models/book_types');
+const reviewModel = require('../../../models/review_books');
 const borrowBookModel = require('../../../models/borrow_books');
 const db = require('../../../config/db').sequelize;
-const {resSuccess, resFailure, parameterErr} = require('../../../public/js/route');
+const { resSuccess, resFailure, parameterErr } = require('../../../public/js/route');
 
 
 /**
@@ -28,25 +29,25 @@ const {resSuccess, resFailure, parameterErr} = require('../../../public/js/route
 * @apiVersion 1.0.0
 */
 
-router.post('/api/admin/addbook', async (ctx, next) => {
+router.post('/api/admin/addbook', async(ctx, next) => {
   // let _con = ctx.query;
   let _con = ctx.request.body;
 
   try {
 
-  	// 判断这些都不能为空
-  	if (!_con.type || _con.type == '') {
-  	  parameterErr(ctx, {});
+    // 判断这些都不能为空
+    if (!_con.type || _con.type == '') {
+      parameterErr(ctx, {});
       return;
-  	}
+    }
 
     if (!_con.title || _con.title == '') {
-  	  parameterErr(ctx, {});
+      parameterErr(ctx, {});
       return;
-  	}
+    }
 
     if (!_con.author || _con.author == '') {
-  	  parameterErr(ctx, {});
+      parameterErr(ctx, {});
       return;
     }
 
@@ -122,7 +123,7 @@ router.post('/api/admin/addbook', async (ctx, next) => {
 * @apiVersion 1.0.0
 */
 
-router.get('/api/bookList', async (ctx, next) => {
+router.get('/api/bookList', async(ctx, next) => {
   let _query = ctx.query;
 
   try {
@@ -131,24 +132,24 @@ router.get('/api/bookList', async (ctx, next) => {
     // 关联查询书籍分类、条件查询（书籍分类、书籍状态）
     if (_query) {
       // sql = 'select a.id as bookId,a.type_id,a.title,a.author,a.url,' +
-      // 'a.content,a.background,a.create_time,a.update_time,a.status as ' +
-      // 'bookStatus, b.name as bookTypeName from books a,book_types b ' +
-      // (_query.type_id || _query.bookStatus ? 'where ' : '') +
-      // (_query.type_id ? `type_id=${_query.type_id} and ` : '') +
-      // (_query.bookStatus ? `a.status=${_query.bookStatus}` : '') +
-      // ' and a.type_id=b.id ' +
-      // `limit ${ (_query.pageNo ? _query.pageNo - 1 : 0) *
+      //   'a.content,a.background,a.create_time,a.update_time,a.status as ' +
+      //   'bookStatus, b.name as bookTypeName from books a,book_types b ' +
+      //   (_query.type_id || _query.bookStatus ? 'where ' : '') +
+      //   (_query.type_id ? `type_id=${_query.type_id} and ` : '') +
+      //   (_query.bookStatus ? `a.status=${_query.bookStatus}` : '') +
+      //   ' and a.type_id=b.id ' +
+      //   `limit ${ (_query.pageNo ? _query.pageNo - 1 : 0) *
       //           (_query.pageSize ? _query.pageSize : 200)
       //         }, ${_query.pageSize ? _query.pageSize : 200}`;
 
       sql = 'select a.id as bookId,a.type_id,a.title,a.author,a.url,' +
-      'a.content,a.background,a.create_time,a.update_time,a.status as ' +
-      'bookStatus, b.name as bookTypeName from books a,book_types b ' +
-      (_query.type_id || _query.bookStatus ? 'where ' : '') +
-      (_query.type_id ? `type_id=${_query.type_id} and ` : '') +
-      (_query.bookStatus ? `a.status=${_query.bookStatus}` : '') +
-      ' and a.type_id=b.id order by a.update_time desc ' +
-      `limit ${ (_query.pageNo ? _query.pageNo - 1 : 0) *
+        'a.content,a.background,a.create_time,a.update_time,a.status as ' +
+        'bookStatus, b.name as bookTypeName from books a,book_types b ' +
+        (_query.type_id || _query.bookStatus ? 'where ' : '') +
+        (_query.type_id ? `type_id=${_query.type_id} and ` : '') +
+        (_query.bookStatus ? `a.status=${_query.bookStatus}` : '') +
+        ' and a.type_id=b.id order by a.update_time desc ' +
+        `limit ${ (_query.pageNo ? _query.pageNo - 1 : 0) *
                 (_query.pageSize ? _query.pageSize : 200)
               }, ${_query.pageSize ? _query.pageSize : 200}`;
     }
@@ -166,16 +167,16 @@ router.get('/api/bookList', async (ctx, next) => {
           msg: '请求成功',
           data: result,
           pageTurn: {
-    		  	pageSize: _query.pageSize ? parseInt(_query.pageSize) : 200,
-    		  	pageNo: _query.pageNo ? parseInt(_query.pageNo) : 1,
-    		  	firstPage: _query.pageNo ? parseInt(_query.pageNo) : 1,
-    		  	nextPage: _query.pageNo ? parseInt(_query.pageNo) + 1 : 2,
-    		  }
+            pageSize: _query.pageSize ? parseInt(_query.pageSize) : 200,
+            pageNo: _query.pageNo ? parseInt(_query.pageNo) : 1,
+            firstPage: _query.pageNo ? parseInt(_query.pageNo) : 1,
+            nextPage: _query.pageNo ? parseInt(_query.pageNo) + 1 : 2,
+          }
         };
       })
 
-  } catch(err) {
-  	resFailure(ctx, err);
+  } catch (err) {
+    resFailure(ctx, err);
   }
 });
 
@@ -208,7 +209,7 @@ router.get('/api/bookList', async (ctx, next) => {
 * }
 * @apiVersion 1.0.0
 */
-const getBookDetails = async (ctx) => {
+const getBookDetails = async(ctx) => {
   let data = ctx.request.query;
 
   if (!data.bookId) {
@@ -219,9 +220,9 @@ const getBookDetails = async (ctx) => {
   try {
 
     let sql = 'select a.id as bookId,a.type_id,a.title,a.author,a.url,' +
-    'a.content,a.create_time,a.update_time,a.status as bookStatus,' +
-    'b.name as bookTypeName from books a,book_types b where' +
-    ' a.id=' + data.bookId + ' and a.type_id=b.id';
+      'a.content,a.create_time,a.update_time,a.status as bookStatus,' +
+      'b.name as bookTypeName from books a,book_types b where' +
+      ' a.id=' + data.bookId + ' and a.type_id=b.id';
 
     await db.query(sql)
       .spread(result => {
@@ -261,7 +262,7 @@ const getBookDetails = async (ctx) => {
 * }
 * @apiVersion 1.0.0
 */
-const updateBookDetails = async (ctx) => {
+const updateBookDetails = async(ctx) => {
   let data = ctx.request.body;
 
   if (!data.bookId) { parameterErr(ctx, {}); return; };
@@ -307,7 +308,7 @@ const updateBookDetails = async (ctx) => {
 * }
 * @apiVersion 1.0.0
 */
-const offlineBook = async (ctx) => {
+const offlineBook = async(ctx) => {
   let data = ctx.request.body;
 
   if (!data.bookId) { parameterErr(ctx, {}); return; };
@@ -350,5 +351,65 @@ const offlineBook = async (ctx) => {
 router.get('/api/bookDetails', getBookDetails);
 router.post('/api/admin/bookDetails', updateBookDetails);
 router.post('/api/admin/offlineBook', offlineBook);
+
+
+
+/**
+* @api {get} /api/user/getRecommendList 获取借推荐接口
+* @apiDescription 获取借推荐接口 - 史沐卉
+* @apiGroup Book
+* @apiSuccess {int} code 成功: 1, 失败: 0
+* * @apiSuccess {string} msg 请求成功/失败
+* @apiSuccessExample {json} Success-Response:
+*  {
+      code: 1,
+      msg: '请求成功',
+      data: []
+    ]
+*  }
+* @apiSampleRequest http://localhost:3000/api/user/getBorrowBookList?id=1
+* @apiVersion 1.0.0
+*/
+
+router.get('/api/user/getRecommendList', async(ctx) => {
+  try {
+    const data = ctx.request.query;
+
+    let selectType = await bookTypesModel.selectData();
+    var returnArr = [];
+
+    for(let i = 0; i < selectType.length; i++) {
+      let selectBook = await bookModel.selectData({
+        status: 0,
+        type_id: selectType[i].id,
+      });
+
+      if (selectBook && selectBook.length < 3 && selectBook.length > 0) {
+        returnArr.push(...selectBook);
+      } else if (selectBook && selectBook.length > 3) {
+
+        for (let j = 0; j < selectBook.length; j++) {
+          let selectReview =  await reviewModel.selectData({
+            book_id: selectBook[j].id
+          });
+          selectBook[j].count = selectReview.length;
+        }
+        selectBook.sort(compare('count'));
+        returnArr.push(...selectBook.slice(0,3));
+      }
+    }
+    resSuccess(ctx, returnArr);
+  } catch (err) {
+    resFailure(ctx, err);
+  }
+});
+
+function compare(i){
+  return function(a,b){
+      var value1 = a[i];
+      var value2 = b[i];
+      return value2 - value1;
+  }
+}
 
 module.exports = router;

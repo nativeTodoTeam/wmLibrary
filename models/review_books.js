@@ -33,6 +33,22 @@ const ReviewBook = db.defineModel('review_books', {
   }
 });
 
+const insertData = async (obj) => {
+  let callback = await ReviewBook.create(obj);
+  console.log('created: success');
+  return JSON.parse(JSON.stringify(callback));
+};
+
+const selectData = async (obj, order) => {
+  let callback = await ReviewBook.findAll({
+    where: obj,
+    order: order ? order : []
+  });
+  console.log(`find ${callback.length} books: success`);
+  return JSON.parse(JSON.stringify(callback));
+};
+
 module.exports={
   ReviewBook,
+  selectData
 };

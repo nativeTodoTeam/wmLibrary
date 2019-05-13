@@ -462,10 +462,10 @@ router.post('/api/user/cancelBorrow', async (ctx) => {
 });
 
 /**
-* @api {GET} /api/userInfo?userId=3 用户借阅书籍信息接口
+* @api {GET} /api/getUserBorrowBooks 用户借阅书籍信息接口
 * @apiGroup BorrowBook
-* @apiDescription Author:汪小岗
-* @apiParam {Number} userId 用户id (必填)
+* @apiDescription Author:汪小岗(已改)
+* @apiParam {Number} type 查询状态 (必填, 0: 在读, 1: 预约, 2: 已读)
 *
 * @apiSuccess {Number} code 成功: 1, 失败: 0, 参数错误: 2
 * @apiSuccess {string} msg 请求成功/失败
@@ -495,28 +495,66 @@ router.post('/api/user/cancelBorrow', async (ctx) => {
 */
 const getUserBorrowBooks = async (ctx) => {
   try {
+    const data = ctx.request.query;
     const userId = ctx.user.id;
+    let obj= {};
+    let startTime;
+    let endTime;
+    let date = new Date();
 
-    if (!userId) {
-      parameterErr(ctx, {});
+    if (!data.type || data.type == '') {
+      parameterErr(ctx, '查询类型参数不能为空');
       return;
     }
 
-    let sql = 'select a.type_id,a.title,a.author,a.url,a.content,' +
-    'a.create_time,a.update_time,a.status as bookStatus,b.book_id,' +
-    'b.status,b.start_time,b.end_time from books a,borrow_books b where' +
-    ' b.user_id=' + userId + ' and a.id=b.book_id order by a.create_time desc';
+    obj.user_id = userId;
 
-    await db.query(sql)
-      .spread(result => {
-        console.log(result)
-        ctx.response.status = 200;
-        ctx.response.body = {
-          code: 1,
-          msg: '请求成功',
-          data: result
-        };
-      })
+    if (data.type == 0) {
+      startTime = getMonthStartDay(date);
+      endTime = getNextStartTime(date);
+      obj.status = 0;
+      obj.start_time = {
+        [Op.lt]: endTime,
+      };
+    } else if (data.type == 1) {
+      startTime = getNextStartTime(date);
+      endTime = getSixStartTime(date);
+      obj.status = 0;
+      obj.start_time = {
+        [Op.lte]: endTime,
+        [Op.gte]: startTime
+      };
+    } else {
+      obj.status = 1;
+    }
+    
+
+    let selectResult = await borrowModel.selectData(obj, [
+      ['start_time', 'DESC']
+    ]);
+
+    if (selectResult){
+      resSuccess(ctx, selectResult);
+    } else {
+      resFailure(ctx, '查询失败');
+    }
+
+    // let sql = 'select a.type_id,a.title,a.author,a.url,a.content,' +
+    // 'a.create_time,a.update_time,a.status as bookStatus,b.book_id,' +
+    // 'b.status,b.start_time,b.end_time from books a,borrow_books b where' +
+    // ' b.user_id=' + userId + ' and a.id=b.book_id order by a.create_time desc';
+
+    // await db.query(sql)
+    //   .spread(result => {
+    //     console.log(result)
+    //     ctx.response.status = 200;
+    //     ctx.response.body = {
+    //       code: 1,
+    //       msg: '请求成功',
+    //       data: result
+    //     };
+    //   })
+
 
   } catch (err) {
     resFailure(ctx, err);

@@ -110,7 +110,7 @@ router.post('/api/user/reg', async(ctx) => {
         // hex十六进制
         md5.update(data.password);
         let md5Password = md5.digest('hex');
-  
+
         let userResult = await usersModel.insertData({
           name: data.name,
           phone: data.phone,
@@ -121,7 +121,7 @@ router.post('/api/user/reg', async(ctx) => {
           status: 0,
           reg_status: 1
         });
-  
+
         if (userResult) {
           resSuccess(ctx, '操作成功');
         } else {
@@ -157,7 +157,7 @@ router.post('/api/user/reg', async(ctx) => {
 */
 
 // 密码设置接口
-const setPassword = async (ctx) => {
+const setPassword = async(ctx) => {
   let data = JSON.parse(ctx.request.body);
 
   // 创建 md5 算法加密
@@ -174,13 +174,13 @@ const setPassword = async (ctx) => {
         let md5Password = md5.digest('hex');
 
         await usersModel.Users.update({
-          password: md5Password
-        }, {
-          where: {
-            id: 3,
-          },
-          silent: true
-        })
+            password: md5Password
+          }, {
+            where: {
+              id: 3,
+            },
+            silent: true
+          })
           .then((res) => {
             routerConfig.resSuccess(ctx, '修改成功')
           })
