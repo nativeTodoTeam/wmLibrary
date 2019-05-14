@@ -20,21 +20,17 @@ const {
 * @apiParam {int} id 书id
 * @apiSuccess {int} code 成功: 0, 失败: 1
 * * @apiSuccess {string} msg 请求成功/失败
-* * @apiSuccess {json} data 返回内容: status: 0 已预约/借出, -1 可预约和借阅
+* * @apiSuccess {json} data 返回内容: status: 0 已预约/借出, -1 可借阅, -2 可预约
 * @apiSuccessExample {json} Success-Response:
 *  {
       code: 1,
       msg: '请求成功',
       data: [
         {
-            "start_time": "2018-07-31T16:00:00.000Z",
-            "end_time": "2018-07-29T16:00:00.000Z",
-            "create_time": "2018-07-27T02:02:56.000Z",
-            "update_time": "2018-07-27T02:02:56.000Z",
-            "book_id": 1,
+            "borrow_year": "2018",
+            "borrow_month": "8",
             "user_id": 1,
             "status": 0,
-            "id": 1
         }
     ]
 *  }
@@ -66,13 +62,23 @@ router.get('/api/user/getBorrowBookList', async (ctx) => {
       ['start_time', 'ASC']
     ]);
 
+    console.log(selectResult);
+
     // 循环处理半年内的借阅问题
     if (selectResult && selectResult.length < 7) {
-
+      var returnArr = [];
       if (selectResult.length == 6) {
-        resSuccess(ctx, selectResult);
+        for (let j = 0; j < selectResult.length; j++) {
+          returnArr.push({
+            status: 0,
+            user_id: selectResult[j].user_id,
+            name: selectResult[j].user_name,
+            borrow_year: new Date(selectResult[j].start_time).getFullYear(),
+            borrow_month: new Date(selectResult[j].start_time).getMonth() + 1
+          });
+        }
       } else {
-        var returnArr = [];
+        
         for (let i = 0; i < 6; i++) {
 
           let y = startTime.getFullYear();
@@ -87,10 +93,11 @@ router.get('/api/user/getBorrowBookList', async (ctx) => {
           let searchDate = getMonthStartDay(date);
 
           returnArr.push({
-            book_id: data.id,
-            status: -1,
-            borrow_time:
-              searchDate.getFullYear() + '-' + (searchDate.getMonth() + 1),
+            status: i == 0 ? -1 : -2,
+            user_id: -1,
+            name: '',
+            borrow_year: searchDate.getFullYear(),
+            borrow_month: searchDate.getMonth() + 1
           });
 
           for (let j = 0; j < selectResult.length; j++) {
@@ -98,6 +105,8 @@ router.get('/api/user/getBorrowBookList', async (ctx) => {
             if (new Date(selectResult[j].start_time) - searchDate == 0) {
 
               returnArr[i].status = 0;
+              returnArr[i].user_id = selectResult[j].user_id;
+              returnArr[i].name = selectResult[j].user_name;
               break;
             }
           }
@@ -375,8 +384,13 @@ router.post('/api/user/borrowBook', async (ctx) => {
       }
     });
 
+    console.log(selectResult);
+
     if (selectResult.length > 0) {
-      resFailure(ctx, '当前时间不可预约');
+      resSuccess(ctx, {
+        id: '10001',
+        text: '您在该时间内已预约了其他书籍，不可再次预约'
+      });
     } else {
       let selectBook = await booksModel.selectData({
         id: data.book_id
@@ -388,16 +402,20 @@ router.post('/api/user/borrowBook', async (ctx) => {
 
       let borrowResult = await borrowModel.insertData({
         book_id: data.book_id,
-        book_name: selectBook.title,
+        book_name: selectBook[0].title,
+        author: selectBook[0].author,
         user_id: userId,
-        user_name: selectUser.name,
+        user_name: selectUser[0].name,
         start_time: startDate,
         end_time: endDate,
         status: 0
       });
 
       if (borrowResult) {
-        resSuccess(ctx, '操作成功');
+        resSuccess(ctx, {
+          id: '10000',
+          text: '操作成功'
+        });
       } else {
         resFailure(ctx, '操作失败');
       }

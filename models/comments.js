@@ -32,6 +32,15 @@ const Comment = db.defineModel('comments', {
   }
 });
 
+const selectData = async (obj) => {
+  let callback = await Comment.findAll({
+    where: obj
+  });
+  console.log(`find ${callback.length} books: success`);
+  return JSON.parse(JSON.stringify(callback));
+};
+
 module.exports={
   Comment,
+  selectData
 };

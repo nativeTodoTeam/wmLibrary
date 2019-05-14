@@ -22,6 +22,10 @@ const Borrow = db.defineModel('borrow_books', {
     type: Sequelize.STRING,
     allowNull: true
   },
+  author: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
   status: {
     type: Sequelize.INTEGER,
     allowNull: true

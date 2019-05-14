@@ -143,7 +143,7 @@ router.get('/api/bookList', async(ctx, next) => {
       //         }, ${_query.pageSize ? _query.pageSize : 200}`;
 
       sql = 'select a.id as bookId,a.type_id,a.title,a.author,a.url,' +
-        'a.content,a.background,a.create_time,a.update_time,a.status as ' +
+        'a.content,a.background,a.foreground,a.create_time,a.update_time,a.status as ' +
         'bookStatus, b.name as bookTypeName from books a,book_types b ' +
         (_query.type_id || _query.bookStatus ? 'where ' : '') +
         (_query.type_id ? `type_id=${_query.type_id} and ` : '') +
@@ -220,7 +220,7 @@ const getBookDetails = async(ctx) => {
   try {
 
     let sql = 'select a.id as bookId,a.type_id,a.title,a.author,a.url,' +
-      'a.content,a.create_time,a.update_time,a.status as bookStatus,' +
+      'a.content,a.background,a.foreground,a.create_time,a.update_time,a.status as bookStatus,' +
       'b.name as bookTypeName from books a,book_types b where' +
       ' a.id=' + data.bookId + ' and a.type_id=b.id';
 
