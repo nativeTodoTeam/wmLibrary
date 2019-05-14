@@ -8,7 +8,6 @@ const db = require('../../../config/db').sequelize;
 * @apiDescription 赵晓彤
 * @apiGroup Book
 * @apiParam {int} reviewId  书评ID
-* @apiParam {int} userId  用户ID
 * @apiParam {string} content 内容
 *
 * @apiSuccess {int} code 成功: 0, 失败: 1
@@ -33,9 +32,6 @@ router.post('/api/user/addComment', async (ctx) => {
   	// 判断参数是否存在和是否为空
   	if (!_con.reviewId || _con.reviewId == '') {
   	  parameterErr(ctx, {});
-  	} else if (!_con.userId || _con.userId == '') {
-  	  parameterErr(ctx, {});
-
   	} else if (!_con.content || _con.content == '') {
   	  parameterErr(ctx, {});
 
@@ -49,11 +45,11 @@ router.post('/api/user/addComment', async (ctx) => {
 
   	  }).then(result => {
   	  	ctx.response.status = 200;
-	    ctx.response.body = {
-		  code: 1,
-		  msg: '请求成功',
-		  data: {}
-		}
+				ctx.response.body = {
+					code: 1,
+					msg: '请求成功',
+					data: {}
+				}
   	  })
     }
 
