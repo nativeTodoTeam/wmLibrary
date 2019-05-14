@@ -393,6 +393,7 @@ router.get('/api/user/getRecommendList', async(ctx) => {
             book_id: selectBook[j].id
           });
           selectBook[j].count = selectReview.length;
+          selectBook[j].bookId = selectBook[j].id;
         }
         selectBook.sort(compare('count'));
         returnArr.push(...selectBook.slice(0,3));

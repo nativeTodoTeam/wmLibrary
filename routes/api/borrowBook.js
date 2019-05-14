@@ -384,8 +384,6 @@ router.post('/api/user/borrowBook', async (ctx) => {
       }
     });
 
-    console.log(selectResult);
-
     if (selectResult.length > 0) {
       resSuccess(ctx, {
         id: '10001',
