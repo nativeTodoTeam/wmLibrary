@@ -8,10 +8,9 @@ const db = require('../../../config/db').sequelize;
 
 /**
 * @api {post} /api/user/addReviewBook 添加书心得
-* @apiDescription 赵晓彤
+* @apiDescription 赵晓彤(已改)
 * @apiGroup Book
-* @apiParam {int} userId  用户ID
-* @apiParam {int} bookId  书籍ID
+* @apiParam {int} borrowId  借阅记录ID
 * @apiParam {string} content 书籍心得
 *
 * @apiSuccess {int} code 成功: 0, 失败: 1
@@ -28,15 +27,13 @@ const db = require('../../../config/db').sequelize;
 */
 
 router.post('/api/user/addReviewBook', async (ctx, next) => {
-  let _con = ctx.query;
+  let _con = ctx.request.body;
   let _userId = ctx.user.id;
   // let _con = ctx.request.body;
   try {
 
   	// 判断这些都不能为空
-  	if (!_con.userId || _con.userId == '') {
-  	  parameterErr(ctx, {});
-  	} else if (!_con.bookId || _con.bookId == '') {
+  	if (!_con.borrowId || _con.borrowId == '') {
   	  parameterErr(ctx, {});
 
   	} else if (!_con.content || _con.content == '') {
@@ -44,34 +41,34 @@ router.post('/api/user/addReviewBook', async (ctx, next) => {
 
     } else {
 
-	    await reviewModel.ReviewBook.create({
-	      user_id: _userId,
-	      book_id: _con.bookId,
-	      content: _con.content,
+			let selectResult = await borrowModel.selectData({
+				id: _con.borrowId,
+				user_id: _userId
+			});
 
-	    }).then(result => {
+			if (selectResult && selectResult.length == 1) {
+				let res = await reviewModel.insertData({
+					user_id: _userId,
+					book_id: selectResult[0].book_id,
+					content: _con.content,
+				})
 
-	    });
+				// 修改借书状态，3:还书并审核
+				let res2 = await borrowModel.updateData({
+					status: 3
+				},{
+					id: _con.borrowId,
+				})
 
-	    // 修改借书状态，3:还书并审核
-	    await borrowModel.Borrow.update(
-	    	{ status: 3 },
-	    	{ where:{
-	    	  user_id: _userId,
-			    book_id: _con.bookId,
-	      }}
-	    )
-
-        ctx.response.status = 200;
-        ctx.response.body = {
-		  code: 1,
-		  msg: '请求成功',
-		  data: {}
-	   }
-
-
+				if (res && res2) {
+					resSuccess(ctx, '操作成功');
+				} else {
+					resFailure(ctx, '操作失败');
+				}
+			} else {
+				resFailure(ctx, '操作失败');
+			}
   	}
-    // await ctx.render('index');
   } catch (err) {
     resFailure(ctx, err);
   }

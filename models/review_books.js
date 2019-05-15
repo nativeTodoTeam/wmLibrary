@@ -50,5 +50,6 @@ const selectData = async (obj, order) => {
 
 module.exports={
   ReviewBook,
-  selectData
+  selectData,
+  insertData
 };
