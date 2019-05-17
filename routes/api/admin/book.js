@@ -385,6 +385,9 @@ router.get('/api/user/getRecommendList', async(ctx) => {
       });
 
       if (selectBook && selectBook.length < 3 && selectBook.length > 0) {
+        for (let j = 0; j < selectBook.length; j++) {
+          selectBook[j].bookId = selectBook[j].id;
+        }
         returnArr.push(...selectBook);
       } else if (selectBook && selectBook.length > 3) {
 
